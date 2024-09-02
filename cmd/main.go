@@ -1,21 +1,26 @@
 package main
 
 import (
-	"api-go/internal/app/customers"
-	"api-go/internal/app/transaction/refill"
-	"api-go/internal/app/transaction/remittance"
-	"net/http"
+	"api-go/internal/app/users"
+	"api-go/pkg/server"
 )
 
 func main() {
+	srv := server.NewServer("127.0.0.1:8080")
+	user := users.NewUsers()
+	mux := user.Handlers()
+	srv.AddHandler(mux)
+	srv.Run()
 	//var customer *customers.Customer]
-	http.HandleFunc("/customers", cust.CreateCustomer)
-	http.HandleFunc("/transaction/refill", ref.CreateRefill)
-	http.HandleFunc("/transaction/remittance", rem.CreateRemittance)
-	http.ListenAndServe(":8001", nil)
+	// mux := http.NewServeMux()
+	// mux.HandleFunc("/customers", cust.CreateCustomer)
+	// mux.HandleFunc("/transaction/refill", ref.CreateRefill)
+	// mux.HandleFunc("/transaction/remittance", rem.CreateRemittance)
+	// http.ListenAndServe(":8001", mux)
 }
 
-var cust = &customers.Customer{
+/*
+var cust = &handlers.Customer{
 	Customer_ID: "",
 	User_Name:   "Tertyfun",
 	Password:    "wertghjm,",
