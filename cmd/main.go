@@ -3,14 +3,39 @@ package main
 import (
 	"api-go/internal/app/users"
 	"api-go/pkg/server"
+	"bytes"
+	"context"
+	"time"
 )
 
 func main() {
-	srv := server.NewServer("127.0.0.1:8080")
-	user := users.NewUsers()
-	mux := user.Handlers()
-	srv.AddHandler(mux)
-	srv.Run()
+	addressServer := "127.0.0.1:8080"
+
+	ctx := context.Background()
+	accoutingService := users.NewUsers()
+
+	server := server.NewServer(addressServer)
+	server.AddHandler(accoutingService.Handlers())
+	server.Run(ctx)
+
+	time.Sleep(time.Second * 1)
+
+	// Prepare message
+	dataForCheck := `{"id": "1",
+	"UserName": "asdf",
+	"Password": "asdfasdf"}`
+	buf := &bytes.Buffer{}
+	buf.WriteString(dataForCheck)
+
+	// request builder
+	//	_, _ := http.NewRequest(http.MethodPost, `http://`+addressServer+`/users`, buf)
+
+	// ctx := context.Background()
+	// srv := server.NewServer("127.0.0.1:8080")
+	// user := users.NewUsers()
+	// mux := user.Handlers()
+	// srv.AddHandler(mux)
+	// srv.Run(ctx)
 	//var customer *customers.Customer]
 	// mux := http.NewServeMux()
 	// mux.HandleFunc("/customers", cust.CreateCustomer)

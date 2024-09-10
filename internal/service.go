@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -19,7 +18,6 @@ func CallLogic(fn func(context.Context, []byte) ([]byte, error)) func(w http.Res
 			log.Print(err)
 		}
 
-		data, err := json.Marshal(res)
-		w.Write(data)
+		w.Write(res)
 	}
 }

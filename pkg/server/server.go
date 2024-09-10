@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func (s *Server) AddHandler(mux http.Handler) error {
 	return nil
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(ctx context.Context) error {
 
 	go func() {
 		s.httpServer.ListenAndServe()
