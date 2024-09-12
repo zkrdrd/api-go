@@ -3,5 +3,6 @@
     "port" : 5432,
     "user" : "user",
     "password" : "password",
-    "dbname" : "dbname"
+    "dbname" : "dbname",
+    "sslmode": "disable"
 }
