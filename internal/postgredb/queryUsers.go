@@ -6,7 +6,7 @@ import (
 )
 
 func (db *DB) GetUser(user *buisness.Users) (*buisness.Users, error) {
-	if err := db.Conn.QueryRow(`
+	if err := db.conn.QueryRow(`
 	SELECT id first_name, last_name, middle_name
 	FROM transaction`).Scan(
 		&user.FirstName,
@@ -19,12 +19,12 @@ func (db *DB) GetUser(user *buisness.Users) (*buisness.Users, error) {
 }
 
 func (db *DB) SaveUser(transf *buisness.Users) error {
-	if _, err := db.Conn.Exec(`
+	if _, err := db.conn.Exec(`
 	INSERT INTO transaction (first_name, last_name, middle_name) 
 	VALUES (
-	?, -- FirstName
-    ?, -- LastName
-    ?  -- MiddleName)`,
+	$1, -- FirstName
+    $2, -- LastName
+    $3  -- MiddleName)`,
 		transf.FirstName,
 		transf.LastName,
 		transf.MiddleName); err != nil {

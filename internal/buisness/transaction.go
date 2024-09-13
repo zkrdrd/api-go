@@ -15,7 +15,7 @@ type CacheOut struct {
 }
 
 // Я тип - я описываю перевод с одного счета на другой
-type Transfer struct {
+type InternalTransfer struct {
 	AccountSender    string
 	AccountRecipient string
 	Amount           string
@@ -45,7 +45,7 @@ func (a *Accouting) CacheIn(ctx context.Context, checkin *CacheIn) error {
 }
 
 // Тут я перевожу деньги между внетренними счетами
-func (a *Accouting) InternalTransfer(ctx context.Context, transfer *Transfer) error {
+func (a *Accouting) InternalTransfer(ctx context.Context, transfer *InternalTransfer) error {
 	//...
 	return nil
 }

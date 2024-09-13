@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-func (db *DB) GetTransfer(id, transf *buisness.Transfer) (*buisness.Transfer, error) {
-	if err := db.Conn.QueryRow(`
+func (db *DB) GetTransfer(id, transf *buisness.InternalTransfer) (*buisness.InternalTransfer, error) {
+	if err := db.conn.QueryRow(`
 	SELECT id account_sender, account_recipient, amount 
-	FROM transaction WHERE id = ?`, id).Scan(
+	FROM transaction WHERE id = $1`, id).Scan(
 		&transf.AccountRecipient,
 		&transf.AccountSender,
 		&transf.Amount); err != nil {
@@ -18,8 +18,8 @@ func (db *DB) GetTransfer(id, transf *buisness.Transfer) (*buisness.Transfer, er
 	return transf, nil
 }
 
-func (db *DB) ListTransfer(transf *buisness.Transfer) error {
-	rows, err := db.Conn.Query(`
+func (db *DB) ListTransfer(transf *buisness.InternalTransfer) error {
+	rows, err := db.conn.Query(`
 	SELECT id account_sender, account_recipient, amount 
 	FROM transaction`)
 	if err != nil {
@@ -39,13 +39,13 @@ func (db *DB) ListTransfer(transf *buisness.Transfer) error {
 	return nil
 }
 
-func (db *DB) SaveTransfer(transf *buisness.Transfer) error {
-	if _, err := db.Conn.Exec(`
+func (db *DB) SaveTransfer(transf *buisness.InternalTransfer) error {
+	if _, err := db.conn.Exec(`
 	INSERT INTO transaction (account_sender, account_recipient, amount) 
 	VALUES (
-	?, -- AccountSender
-    ?, -- AccountRecipient
-    ?  -- Amount)`,
+	$1, -- AccountSender
+    $2, -- AccountRecipient
+    $3  -- Amount)`,
 		transf.AccountRecipient,
 		transf.AccountSender,
 		transf.Amount); err != nil {

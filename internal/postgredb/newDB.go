@@ -4,30 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
-	"github.com/zkrdrd/ConfigParser"
 )
 
-type DBConfig struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	User     int    `json:"user"`
-	Password string `json:"password"`
-	DBname   string `json:"dbname"`
-	SSLmode  string `json:"sslmode,omitempty"`
-}
-
 type DB struct {
-	Conn *sql.DB
-}
-
-func Parse() error {
-	var cfg = &DBConfig{}
-	if err := ConfigParser.Read("ConConf.json", cfg); err != nil {
-		log.Fatal(err)
-		return err
-	}
-	return nil
+	conn *sql.DB
 }
 
 func (dbconf *DBConfig) NewDB() (*DB, error) {
@@ -50,5 +30,5 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 	}
 	// todo:
 	// 1. подключение передается в запросы
-	return &DB{Conn: db}, nil
+	return &DB{conn: db}, nil
 }
