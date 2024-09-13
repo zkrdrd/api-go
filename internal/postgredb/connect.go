@@ -1,4 +1,4 @@
-package conect
+package postgredb
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	"github.com/zkrdrd/ConfigParser"
 )
 
-type DataConnection struct {
+type DBConfig struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	User     int    `json:"user"`
@@ -17,8 +17,12 @@ type DataConnection struct {
 	SSLmode  string `json:"sslmode,omitempty"`
 }
 
+type DB struct {
+	Conn *sql.DB
+}
+
 func Parse() error {
-	var cfg = &DataConnection{}
+	var cfg = &DBConfig{}
 	if err := ConfigParser.Read("ConConf.json", cfg); err != nil {
 		log.Fatal(err)
 		return err
@@ -26,7 +30,7 @@ func Parse() error {
 	return nil
 }
 
-func (dbcon *DataConnection) Connect() (*sql.DB, error) {
+func (dbconf *DBConfig) NewDB() (*DB, error) {
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(`host=%v 
 	port=%v 
@@ -34,18 +38,17 @@ func (dbcon *DataConnection) Connect() (*sql.DB, error) {
 	password=%v 
 	dbname=%v 
 	sslmode=%v`,
-			dbcon.Host,
-			dbcon.Port,
-			dbcon.User,
-			dbcon.Password,
-			dbcon.DBname,
-			dbcon.SSLmode))
+			dbconf.Host,
+			dbconf.Port,
+			dbconf.User,
+			dbconf.Password,
+			dbconf.DBname,
+			dbconf.SSLmode))
 	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
 	// todo:
-	// 1. проверка на наличие активных сессий
-	// 2. закрыть сессию если она неактивна
-	return db, nil
+	// 1. подключение передается в запросы
+	return &DB{Conn: db}, nil
 }

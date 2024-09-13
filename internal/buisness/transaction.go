@@ -1,4 +1,4 @@
-package transaction
+package buisness
 
 import "context"
 
@@ -26,7 +26,7 @@ type Accouting struct {
 	// Во мне лежит все  необходимое для работы
 	// к примеру подключение к БД, а возможно и подключения
 	// к другим сервисам
-	db *db.Conn
+	//db *db.Conn
 }
 
 // Тут я пополняю счет наличными
