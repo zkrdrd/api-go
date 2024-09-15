@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-func (db *DB) GetUser(user *buisness.Users) (*buisness.Users, error) {
+func (db *DB) GetUser(id string, user *buisness.Users) (*buisness.Users, error) {
 	if err := db.conn.QueryRow(`
-	SELECT id first_name, last_name, middle_name
-	FROM transaction`).Scan(
+	SELECT first_name, last_name, middle_name
+	FROM transaction WHERE id = $1`, id).Scan(
 		&user.FirstName,
 		&user.LastName,
 		&user.MiddleName); err != nil {

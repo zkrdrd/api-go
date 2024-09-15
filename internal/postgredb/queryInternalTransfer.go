@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (db *DB) GetTransfer(id, transf *buisness.InternalTransfer) (*buisness.InternalTransfer, error) {
+func (db *DB) GetTransfer(id string, transf *buisness.InternalTransfer) (*buisness.InternalTransfer, error) {
 	if err := db.conn.QueryRow(`
 	SELECT id account_sender, account_recipient, amount 
 	FROM transaction WHERE id = $1`, id).Scan(
