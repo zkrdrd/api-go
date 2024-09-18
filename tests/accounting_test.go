@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"api-go/internal/app/transfer"
 	"api-go/pkg/server"
+	"api-go/pkg/service/app/transfer"
 	"bytes"
 	"context"
 	"io"

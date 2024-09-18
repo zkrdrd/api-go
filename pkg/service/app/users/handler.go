@@ -1,7 +1,7 @@
 package users
 
 import (
-	service "api-go/internal"
+	"api-go/pkg/service"
 	"net/http"
 )
 

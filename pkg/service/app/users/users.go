@@ -3,9 +3,9 @@ package users
 import "context"
 
 type Users struct {
-	// 	User_ID   string `json:"id"`
-	// 	User_Name string `json:"UserName"`
-	// 	Password  string `json:"Password"`
+	User_ID   string `json:"id"`
+	User_Name string `json:"UserName"`
+	Password  string `json:"Password"`
 }
 
 func NewUsers() *Users {

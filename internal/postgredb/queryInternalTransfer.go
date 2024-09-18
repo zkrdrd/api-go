@@ -1,13 +1,13 @@
 package postgredb
 
 import (
-	"api-go/internal/buisness"
+	"api-go/internal/business"
 	"log"
 )
 
-func (db *DB) GetTransfer(id string, transf *buisness.InternalTransfer) (*buisness.InternalTransfer, error) {
+func (db *DB) GetTransfer(id string, transf *business.InternalTransfer) (*business.InternalTransfer, error) {
 	if err := db.conn.QueryRow(`
-	SELECT id account_sender, account_recipient, amount 
+	SELECT account_sender, account_recipient, amount 
 	FROM transaction WHERE id = $1`, id).Scan(
 		&transf.AccountRecipient,
 		&transf.AccountSender,
@@ -18,9 +18,9 @@ func (db *DB) GetTransfer(id string, transf *buisness.InternalTransfer) (*buisne
 	return transf, nil
 }
 
-func (db *DB) ListTransfer(transf *buisness.InternalTransfer) error {
+func (db *DB) ListTransfer(transf *business.InternalTransfer) error {
 	rows, err := db.conn.Query(`
-	SELECT id account_sender, account_recipient, amount 
+	SELECT account_sender, account_recipient, amount 
 	FROM transaction`)
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +39,7 @@ func (db *DB) ListTransfer(transf *buisness.InternalTransfer) error {
 	return nil
 }
 
-func (db *DB) SaveTransfer(transf *buisness.InternalTransfer) error {
+func (db *DB) SaveTransfer(transf *business.InternalTransfer) error {
 	if _, err := db.conn.Exec(`
 	INSERT INTO transaction (account_sender, account_recipient, amount) 
 	VALUES (

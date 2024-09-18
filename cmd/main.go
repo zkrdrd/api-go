@@ -1,32 +1,41 @@
 package main
 
 import (
-	"api-go/internal/app/users"
-	"api-go/pkg/server"
-	"bytes"
-	"context"
-	"time"
+	"api-go/internal/business"
+	"api-go/internal/postgredb"
 )
 
+var usr = &business.Users{
+	FirstName:  "FirstName",
+	LastName:   "LastName",
+	MiddleName: "MiddleName",
+}
+
 func main() {
-	addressServer := "127.0.0.1:8080"
+	//var use = users.NewUser()
+	dbconf, _ := postgredb.Parse("ConConf.json")
+	db, _ := dbconf.NewDB()
+	db.SaveUser(usr)
 
-	ctx := context.Background()
-	accoutingService := users.NewUsers()
+	// ----------------------------------------------------------
+	// addressServer := "127.0.0.1:8080"
 
-	server := server.NewServer(addressServer)
-	server.AddHandler(accoutingService.Handlers())
-	server.Run(ctx)
+	// ctx := context.Background()
+	// accoutingService := users.NewUsers()
 
-	time.Sleep(time.Second * 1)
+	// server := server.NewServer(addressServer)
+	// server.AddHandler(accoutingService.Handlers())
+	// server.Run(ctx)
 
-	// Prepare message
-	dataForCheck := `{"id": "1",
-	"UserName": "asdf",
-	"Password": "asdfasdf"}`
-	buf := &bytes.Buffer{}
-	buf.WriteString(dataForCheck)
+	// time.Sleep(time.Second * 1)
 
+	// // Prepare message
+	// dataForCheck := `{"id": "1",
+	// "UserName": "asdf",
+	// "Password": "asdfasdf"}`
+	// buf := &bytes.Buffer{}
+	// buf.WriteString(dataForCheck)
+	// -----------------------------------------------------------
 	// request builder
 	//	_, _ := http.NewRequest(http.MethodPost, `http://`+addressServer+`/users`, buf)
 

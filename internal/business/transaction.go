@@ -1,4 +1,4 @@
-package buisness
+package business
 
 import "context"
 

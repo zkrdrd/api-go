@@ -1,14 +1,14 @@
 package postgredb
 
 import (
-	"api-go/internal/buisness"
+	"api-go/internal/business"
 	"log"
 )
 
-func (db *DB) GetUser(id string, user *buisness.Users) (*buisness.Users, error) {
+func (db *DB) GetUser(id string, user *business.Users) (*business.Users, error) {
 	if err := db.conn.QueryRow(`
 	SELECT first_name, last_name, middle_name
-	FROM transaction WHERE id = $1`, id).Scan(
+	FROM customers WHERE id = $1`, id).Scan(
 		&user.FirstName,
 		&user.LastName,
 		&user.MiddleName); err != nil {
@@ -18,16 +18,16 @@ func (db *DB) GetUser(id string, user *buisness.Users) (*buisness.Users, error) 
 	return user, nil
 }
 
-func (db *DB) SaveUser(transf *buisness.Users) error {
+func (db *DB) SaveUser(user *business.Users) error {
 	if _, err := db.conn.Exec(`
-	INSERT INTO transaction (first_name, last_name, middle_name) 
+	INSERT INTO customers (first_name, last_name, middle_name) 
 	VALUES (
-	$1, -- FirstName
-    $2, -- LastName
-    $3  -- MiddleName)`,
-		transf.FirstName,
-		transf.LastName,
-		transf.MiddleName); err != nil {
+	$1, --FirstName
+	$2, --LastName
+	$3); --MiddleName `,
+		user.FirstName,
+		user.LastName,
+		user.MiddleName); err != nil {
 		log.Fatal(err)
 		return err
 	}

@@ -1,4 +1,4 @@
-package buisness
+package business
 
 type Users struct {
 	FirstName  string `json:"FirstName"`

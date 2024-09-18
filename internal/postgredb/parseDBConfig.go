@@ -16,16 +16,16 @@ type DBConfig struct {
 	SSLmode  string `json:"sslmode,omitempty"`
 }
 
-func Parse() error {
+func Parse(confPath string) (*DBConfig, error) {
 	var cfg = &DBConfig{}
-	if err := ConfigParser.Read("ConConf.json", cfg); err != nil {
+	if err := ConfigParser.Read(confPath, cfg); err != nil {
 		log.Fatal(err)
-		return err
+		return nil, err
 	}
 	if cfg.Host == "" || (cfg.Port <= 0 && cfg.Port >= 65536) || cfg.User == "" || cfg.Password == "" || cfg.DBname == "" {
 		err := errors.New("config error: config is not filled")
 		log.Fatal(err)
-		return err
+		return nil, err
 	}
-	return nil
+	return cfg, nil
 }
