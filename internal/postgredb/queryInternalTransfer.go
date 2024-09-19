@@ -2,13 +2,19 @@ package postgredb
 
 import (
 	"api-go/internal/business"
+	"errors"
 	"log"
 )
 
-func (db *DB) GetTransfer(id string, transf *business.InternalTransfer) (*business.InternalTransfer, error) {
+var (
+	ErrNoMoreResults = errors.New("no more results")
+)
+
+func (db *DB) GetTransfer(id string) (*business.InternalTransfer, error) {
+	transf := &business.InternalTransfer{}
 	if err := db.conn.QueryRow(`
 	SELECT account_sender, account_recipient, amount 
-	FROM transaction WHERE id = $1`, id).Scan(
+	FROM transactions WHERE id = $1;`, id).Scan(
 		&transf.AccountRecipient,
 		&transf.AccountSender,
 		&transf.Amount); err != nil {
@@ -18,34 +24,41 @@ func (db *DB) GetTransfer(id string, transf *business.InternalTransfer) (*busine
 	return transf, nil
 }
 
-func (db *DB) ListTransfer(transf *business.InternalTransfer) error {
+func (db *DB) ListTransfer() error {
+	transf := &business.InternalTransfer{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
-	FROM transaction`)
+	FROM transactions;`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer rows.Close()
 
+	// if !rows.NextResultSet() {
+	// 	log.Fatalf("%v", ErrNoMoreResults)
+	// 	return ErrNoMoreResults
+	// }
+
 	for rows.Next() {
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount); err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("Account sender: %v; Account recipient: %v; Amount: %v\n", &transf.AccountSender, &transf.AccountRecipient, &transf.Amount)
+		log.Printf("Account sender: %v; Account recipient: %v; Amount: %v\n", transf.AccountSender, transf.AccountRecipient, transf.Amount)
+		// if !rows.NextResultSet() {
+		// 	return nil
+		// }
 	}
-	if !rows.NextResultSet() {
-		log.Fatalf("expected more result sets: %v", rows.Err())
-	}
+
 	return nil
 }
 
 func (db *DB) SaveTransfer(transf *business.InternalTransfer) error {
 	if _, err := db.conn.Exec(`
-	INSERT INTO transaction (account_sender, account_recipient, amount) 
+	INSERT INTO transactions (account_sender, account_recipient, amount) 
 	VALUES (
-	$1, -- AccountSender
-    $2, -- AccountRecipient
-    $3  -- Amount)`,
+	$1, --AccountSender
+    $2, --AccountRecipient
+    $3); --Amount`,
 		transf.AccountRecipient,
 		transf.AccountSender,
 		transf.Amount); err != nil {

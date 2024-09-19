@@ -5,10 +5,11 @@ import (
 	"log"
 )
 
-func (db *DB) GetUser(id string, user *business.Users) (*business.Users, error) {
+func (db *DB) GetUser(id string) (*business.Users, error) {
+	user := &business.Users{}
 	if err := db.conn.QueryRow(`
 	SELECT first_name, last_name, middle_name
-	FROM customers WHERE id = $1`, id).Scan(
+	FROM customers WHERE id = $1;`, id).Scan(
 		&user.FirstName,
 		&user.LastName,
 		&user.MiddleName); err != nil {

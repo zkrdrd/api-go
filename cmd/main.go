@@ -11,11 +11,27 @@ var usr = &business.Users{
 	MiddleName: "MiddleName",
 }
 
+// var transf = &business.InternalTransfer{
+// 	AccountSender:    "2",
+// 	AccountRecipient: "1",
+// 	Amount:           "500",
+// }
+
 func main() {
-	//var use = users.NewUser()
+
 	dbconf, _ := postgredb.Parse("ConConf.json")
 	db, _ := dbconf.NewDB()
 	db.SaveUser(usr)
+
+	// res, _ := db.GetUser("1")
+	// fmt.Println(*res)
+
+	// db.SaveTransfer(transf)
+
+	// res, _ := db.GetTransfer("1")
+	// fmt.Println(*res)
+
+	//_ = db.ListTransfer()
 
 	// ----------------------------------------------------------
 	// addressServer := "127.0.0.1:8080"
