@@ -10,8 +10,8 @@ var (
 	ErrNoMoreResults = errors.New("no more results")
 )
 
-func (db *DB) GetTransfer(id string) (*business.InternalTransfer, error) {
-	transf := &business.InternalTransfer{}
+func (db *DB) GetInternalTrasaction(id string) (*business.InternalTransaction, error) {
+	transf := &business.InternalTransaction{}
 	if err := db.conn.QueryRow(`
 	SELECT account_sender, account_recipient, amount 
 	FROM transactions WHERE id = $1;`, id).Scan(
@@ -24,8 +24,8 @@ func (db *DB) GetTransfer(id string) (*business.InternalTransfer, error) {
 	return transf, nil
 }
 
-func (db *DB) ListTransfer() error {
-	transf := &business.InternalTransfer{}
+func (db *DB) ListInternalTransaction() error {
+	transf := &business.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
 	FROM transactions;`)
@@ -44,7 +44,7 @@ func (db *DB) ListTransfer() error {
 	return nil
 }
 
-func (db *DB) SaveTransfer(transf *business.InternalTransfer) error {
+func (db *DB) SaveInternalTransaction(transf *business.InternalTransaction) error {
 	if _, err := db.conn.Exec(`
 	INSERT INTO transactions (account_sender, account_recipient, amount) 
 	VALUES (
