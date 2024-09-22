@@ -34,19 +34,11 @@ func (db *DB) ListTransfer() error {
 	}
 	defer rows.Close()
 
-	// if !rows.NextResultSet() {
-	// 	log.Fatalf("%v", ErrNoMoreResults)
-	// 	return ErrNoMoreResults
-	// }
-
 	for rows.Next() {
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount); err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("Account sender: %v; Account recipient: %v; Amount: %v\n", transf.AccountSender, transf.AccountRecipient, transf.Amount)
-		// if !rows.NextResultSet() {
-		// 	return nil
-		// }
 	}
 
 	return nil

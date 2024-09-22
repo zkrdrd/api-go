@@ -30,7 +30,6 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 		log.Fatal(err)
 		return nil, err
 	}
-	// todo:
-	// 1. подключение передается в запросы
+
 	return &DB{conn: db}, nil
 }

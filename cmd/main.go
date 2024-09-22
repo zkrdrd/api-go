@@ -3,23 +3,15 @@ package main
 import (
 	"api-go/internal/business"
 	"api-go/internal/postgredb"
+	"errors"
+	"log"
+
+	"github.com/zkrdrd/ConfigParser"
 )
-
-var usr = &business.Users{
-	FirstName:  "FirstName",
-	LastName:   "LastName",
-	MiddleName: "MiddleName",
-}
-
-// var transf = &business.InternalTransfer{
-// 	AccountSender:    "2",
-// 	AccountRecipient: "1",
-// 	Amount:           "500",
-// }
 
 func main() {
 
-	dbconf, _ := postgredb.Parse("ConConf.json")
+	dbconf, _ := parseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
 	db.SaveUser(usr)
 
@@ -32,42 +24,33 @@ func main() {
 	// fmt.Println(*res)
 
 	//_ = db.ListTransfer()
-
-	// ----------------------------------------------------------
-	// addressServer := "127.0.0.1:8080"
-
-	// ctx := context.Background()
-	// accoutingService := users.NewUsers()
-
-	// server := server.NewServer(addressServer)
-	// server.AddHandler(accoutingService.Handlers())
-	// server.Run(ctx)
-
-	// time.Sleep(time.Second * 1)
-
-	// // Prepare message
-	// dataForCheck := `{"id": "1",
-	// "UserName": "asdf",
-	// "Password": "asdfasdf"}`
-	// buf := &bytes.Buffer{}
-	// buf.WriteString(dataForCheck)
-	// -----------------------------------------------------------
-	// request builder
-	//	_, _ := http.NewRequest(http.MethodPost, `http://`+addressServer+`/users`, buf)
-
-	// ctx := context.Background()
-	// srv := server.NewServer("127.0.0.1:8080")
-	// user := users.NewUsers()
-	// mux := user.Handlers()
-	// srv.AddHandler(mux)
-	// srv.Run(ctx)
-	//var customer *customers.Customer]
-	// mux := http.NewServeMux()
-	// mux.HandleFunc("/customers", cust.CreateCustomer)
-	// mux.HandleFunc("/transaction/refill", ref.CreateRefill)
-	// mux.HandleFunc("/transaction/remittance", rem.CreateRemittance)
-	// http.ListenAndServe(":8001", mux)
 }
+
+func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
+	var cfg = &postgredb.DBConfig{}
+	if err := ConfigParser.Read(confPath, cfg); err != nil {
+		log.Fatal(err)
+		return nil, err
+	}
+	if cfg.Host == "" || (cfg.Port <= 0 && cfg.Port >= 65536) || cfg.User == "" || cfg.Password == "" || cfg.DBname == "" {
+		err := errors.New("config error: config is not filled")
+		log.Fatal(err)
+		return nil, err
+	}
+	return cfg, nil
+}
+
+var usr = &business.Users{
+	FirstName:  "FirstName",
+	LastName:   "LastName",
+	MiddleName: "MiddleName",
+}
+
+// var transf = &business.InternalTransfer{
+// 	AccountSender:    "2",
+// 	AccountRecipient: "1",
+// 	Amount:           "500",
+// }
 
 /*
 var cust = &handlers.Customer{
