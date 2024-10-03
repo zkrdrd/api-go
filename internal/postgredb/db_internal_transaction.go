@@ -1,7 +1,7 @@
 package postgredb
 
 import (
-	"api-go/internal/business"
+	"api-go/pkg/models"
 	"errors"
 	"log"
 )
@@ -10,8 +10,8 @@ var (
 	ErrNoMoreResults = errors.New("no more results")
 )
 
-func (db *DB) GetInternalTrasaction(id string) (*business.InternalTransaction, error) {
-	transf := &business.InternalTransaction{}
+func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, error) {
+	transf := &models.InternalTransaction{}
 	if err := db.conn.QueryRow(`
 	SELECT account_sender, account_recipient, amount 
 	FROM transactions WHERE id = $1;`, id).Scan(
@@ -24,8 +24,11 @@ func (db *DB) GetInternalTrasaction(id string) (*business.InternalTransaction, e
 	return transf, nil
 }
 
+// todo:
+// 1. Create tests
+// 1. return list transation "[]*business.InternalTransaction"
 func (db *DB) ListInternalTransaction() error {
-	transf := &business.InternalTransaction{}
+	transf := &models.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
 	FROM transactions;`)
@@ -44,7 +47,7 @@ func (db *DB) ListInternalTransaction() error {
 	return nil
 }
 
-func (db *DB) SaveInternalTransaction(transf *business.InternalTransaction) error {
+func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
 	if _, err := db.conn.Exec(`
 	INSERT INTO transactions (account_sender, account_recipient, amount) 
 	VALUES (

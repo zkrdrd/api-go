@@ -1,8 +1,8 @@
 package main
 
 import (
-	"api-go/internal/business"
 	"api-go/internal/postgredb"
+	"api-go/pkg/models"
 	"errors"
 	"log"
 
@@ -40,7 +40,7 @@ func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
 	return cfg, nil
 }
 
-var usr = &business.Users{
+var usr = &models.Users{
 	FirstName:  "FirstName",
 	LastName:   "LastName",
 	MiddleName: "MiddleName",

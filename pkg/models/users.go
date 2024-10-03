@@ -1,4 +1,4 @@
-package business
+package models
 
 type Users struct {
 	FirstName  string `json:"FirstName"`
