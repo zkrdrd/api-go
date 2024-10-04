@@ -27,7 +27,8 @@ func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, err
 // todo:
 // 1. Create tests
 // 1. return list transation "[]*business.InternalTransaction"
-func (db *DB) ListInternalTransaction() error {
+func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
+	transfSlice := []*models.InternalTransaction{}
 	transf := &models.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
@@ -41,10 +42,10 @@ func (db *DB) ListInternalTransaction() error {
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount); err != nil {
 			log.Fatal(err)
 		}
-		log.Printf("Account sender: %v; Account recipient: %v; Amount: %v\n", transf.AccountSender, transf.AccountRecipient, transf.Amount)
+		transfSlice = append(transfSlice, transf)
 	}
 
-	return nil
+	return transfSlice, nil
 }
 
 func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {

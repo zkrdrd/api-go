@@ -13,7 +13,7 @@ func main() {
 
 	dbconf, _ := parseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
-	db.SaveUser(usr)
+	//db.SaveUser(usr)
 
 	// res, _ := db.GetUser("1")
 	// fmt.Println(*res)
@@ -23,7 +23,7 @@ func main() {
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
 
-	//_ = db.ListTransfer()
+	_, _ = db.ListInternalTransaction()
 }
 
 func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
