@@ -25,8 +25,7 @@ func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, err
 }
 
 // todo:
-// 1. Create tests
-// 2. return list transation "[]*business.InternalTransaction"
+// 1. Create tests.
 func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
 	transfSlice := []*models.InternalTransaction{}
 	transf := &models.InternalTransaction{}
