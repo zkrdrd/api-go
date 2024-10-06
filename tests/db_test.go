@@ -13,7 +13,7 @@ import (
 
 func TestDB(t *testing.T) {
 
-	dbconf, _ := parseDBConfig("D:\\Programming\\api-go\\ConConf.json")
+	dbconf, _ := parseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
 	//db.SaveUser(usr)
 
@@ -36,8 +36,6 @@ func TestDB(t *testing.T) {
 		AccountRecipient: `2`,
 		Amount:           `500`,
 	}
-
-	//buf := &bytes.Buffer{}
 
 	for _, value := range resData {
 		log.Print("print")
