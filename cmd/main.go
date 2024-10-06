@@ -2,7 +2,6 @@ package main
 
 import (
 	"api-go/internal/postgredb"
-	"api-go/pkg/models"
 	"errors"
 	"log"
 
@@ -18,7 +17,7 @@ func main() {
 	// res, _ := db.GetUser("1")
 	// fmt.Println(*res)
 
-	// db.SaveTransfer(transf)
+	//db.SaveInternalTransaction(transf)
 
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
@@ -40,13 +39,13 @@ func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
 	return cfg, nil
 }
 
-var usr = &models.Users{
-	FirstName:  "FirstName",
-	LastName:   "LastName",
-	MiddleName: "MiddleName",
-}
+// var usr = &models.Users{
+// 	FirstName:  "FirstName",
+// 	LastName:   "LastName",
+// 	MiddleName: "MiddleName",
+// }
 
-// var transf = &business.InternalTransfer{
+// var transf = &models.InternalTransaction{
 // 	AccountSender:    "2",
 // 	AccountRecipient: "1",
 // 	Amount:           "500",

@@ -12,6 +12,7 @@ type DB struct {
 	conn *sql.DB
 }
 
+// Инициализация соединения с БД
 func (dbconf *DBConfig) NewDB() (*DB, error) {
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(`host=%v 

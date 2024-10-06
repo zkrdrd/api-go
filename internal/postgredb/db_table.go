@@ -13,7 +13,7 @@ func CreateTableDB() {
 		middle_name VARCHAR(255));`
 
 	createTableTransactions := `
-	CREATE TABLE transactions(
+	CREATE TABLE internal_transactions(
 		id SERIAL PRIMARY KEY,
 		account_sender VARCHAR(255) NOT NULL,
 		account_recipient VARCHAR(255) NOT NULL,

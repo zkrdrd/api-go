@@ -10,6 +10,7 @@ var (
 	ErrNoMoreResults = errors.New("no more results")
 )
 
+// Получение транзакции по id
 func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, error) {
 	transf := &models.InternalTransaction{}
 	if err := db.conn.QueryRow(`
@@ -24,11 +25,9 @@ func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, err
 	return transf, nil
 }
 
-// todo:
-// 1. Create tests.
+// Получение всех транзакций из БД в slice
 func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
 	transfSlice := []*models.InternalTransaction{}
-	transf := &models.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
 	FROM transactions;`)
@@ -38,15 +37,16 @@ func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
 	defer rows.Close()
 
 	for rows.Next() {
+		transf := &models.InternalTransaction{}
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount); err != nil {
 			log.Fatal(err)
 		}
 		transfSlice = append(transfSlice, transf)
 	}
-
 	return transfSlice, nil
 }
 
+// Запись транзакций в БД
 func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
 	if _, err := db.conn.Exec(`
 	INSERT INTO transactions (account_sender, account_recipient, amount) 
@@ -54,8 +54,8 @@ func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error 
 	$1, --AccountSender
     $2, --AccountRecipient
     $3); --Amount`,
-		transf.AccountRecipient,
 		transf.AccountSender,
+		transf.AccountRecipient,
 		transf.Amount); err != nil {
 		log.Fatal(err)
 		return err

@@ -15,41 +15,28 @@ func TestDB(t *testing.T) {
 
 	dbconf, _ := parseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
-	//db.SaveUser(usr)
+	db.DeleteAllRowsInTableTransactions()
 
-	// res, _ := db.GetUser("1")
-	// fmt.Println(*res)
-
-	// db.SaveTransfer(transf)
-
-	// res, _ := db.GetTransfer("1")
-	// fmt.Println(*res)
+	for _, message := range TestValue {
+		db.SaveInternalTransaction(message.Msg)
+	}
 
 	resData, err := db.ListInternalTransaction()
 	if err != nil {
 		log.Fatal("error")
 	}
 
-	// Prepare message
-	dataForCheck := models.InternalTransaction{
-		AccountSender:    `1`,
-		AccountRecipient: `2`,
-		Amount:           `500`,
-	}
-
-	for _, value := range resData {
-		log.Print("print")
-		if dataForCheck.AccountSender != value.AccountSender {
-			t.Error(fmt.Errorf(`result field %v != %v`, dataForCheck.AccountSender, value.AccountSender))
+	for key, value := range resData {
+		if TestValue[key].Msg.AccountSender != value.AccountSender {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].Msg.AccountSender, value.AccountSender))
 		}
-		if dataForCheck.AccountRecipient != value.AccountRecipient {
-			t.Error(fmt.Errorf(`result field %v != %v`, dataForCheck.AccountRecipient, value.AccountRecipient))
+		if TestValue[key].Msg.AccountRecipient != value.AccountRecipient {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].Msg.AccountRecipient, value.AccountRecipient))
 		}
-		if dataForCheck.Amount != value.Amount {
-			t.Error(fmt.Errorf(`result field %v != %v`, dataForCheck.Amount, value.Amount))
+		if TestValue[key].Msg.Amount != value.Amount {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].Msg.Amount, value.Amount))
 		}
 	}
-
 }
 
 func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
@@ -64,4 +51,44 @@ func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
 		return nil, err
 	}
 	return cfg, nil
+}
+
+var TestValue = []struct {
+	Msg *models.InternalTransaction
+}{
+	{
+		Msg: &models.InternalTransaction{
+			AccountSender:    `1`,
+			AccountRecipient: `2`,
+			Amount:           `50`,
+		},
+	},
+	{
+		Msg: &models.InternalTransaction{
+			AccountSender:    `3`,
+			AccountRecipient: `4`,
+			Amount:           `500`,
+		},
+	},
+	{
+		Msg: &models.InternalTransaction{
+			AccountSender:    `5`,
+			AccountRecipient: `6`,
+			Amount:           `5000`,
+		},
+	},
+	{
+		Msg: &models.InternalTransaction{
+			AccountSender:    `7`,
+			AccountRecipient: `8`,
+			Amount:           `50000`,
+		},
+	},
+	{
+		Msg: &models.InternalTransaction{
+			AccountSender:    `9`,
+			AccountRecipient: `10`,
+			Amount:           `500000`,
+		},
+	},
 }
