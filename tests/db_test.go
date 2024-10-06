@@ -1,19 +1,16 @@
 package tests
 
 import (
-	"api-go/internal/postgredb"
+	"api-go/cmd/app"
 	"api-go/pkg/models"
-	"errors"
 	"fmt"
 	"log"
 	"testing"
-
-	"github.com/zkrdrd/ConfigParser"
 )
 
 func TestDB(t *testing.T) {
 
-	dbconf, _ := parseDBConfig("ConConf.json")
+	dbconf, _ := app.ParseDBConfig("D:\\Programming\\api-go\\ConConf.json")
 	db, _ := dbconf.NewDB()
 	db.DeleteAllRowsInTableTransactions()
 
@@ -39,20 +36,8 @@ func TestDB(t *testing.T) {
 	}
 }
 
-func parseDBConfig(confPath string) (*postgredb.DBConfig, error) {
-	var cfg = &postgredb.DBConfig{}
-	if err := ConfigParser.Read(confPath, cfg); err != nil {
-		log.Fatal(err)
-		return nil, err
-	}
-	if cfg.Host == "" || (cfg.Port <= 0 && cfg.Port >= 65536) || cfg.User == "" || cfg.Password == "" || cfg.DBname == "" {
-		err := errors.New("config error: config is not filled")
-		log.Fatal(err)
-		return nil, err
-	}
-	return cfg, nil
-}
-
+// todo
+// 1. добавить дату создания
 var TestValue = []struct {
 	Msg *models.InternalTransaction
 }{

@@ -5,6 +5,9 @@ import "fmt"
 func CreateTableDB() {
 	createDB := `CREATE DATABASE api;`
 
+	// todo
+	// 1. Добавить дату создания
+
 	createTableCustomers := `
 	CREATE TABLE customers(
 		id SERIAL PRIMARY KEY,

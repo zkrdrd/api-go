@@ -27,6 +27,8 @@ func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, err
 
 // Получение всех транзакций из БД в slice
 func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
+	// TODO:
+	// 1. order by по дате создания
 	transfSlice := []*models.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount 
@@ -48,6 +50,9 @@ func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
 
 // Запись транзакций в БД
 func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
+	// todo
+	// 1. добавить дату создания
+	// 2. изменение баланса
 	if _, err := db.conn.Exec(`
 	INSERT INTO transactions (account_sender, account_recipient, amount) 
 	VALUES (

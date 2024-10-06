@@ -18,3 +18,6 @@ type InternalTransaction struct {
 	AccountRecipient string
 	Amount           string
 }
+
+// TODO:
+// 1. Добавить дату создания
