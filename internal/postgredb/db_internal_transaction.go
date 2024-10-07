@@ -2,13 +2,42 @@ package postgredb
 
 import (
 	"api-go/pkg/models"
-	"errors"
 	"log"
 )
 
-var (
-	ErrNoMoreResults = errors.New("no more results")
+type filter struct {
+	order_by_collumn  string
+	order_by_asc_desc string
+	order_by_limit    string
+	order_by_offset   string
+}
+
+const (
+	order_by_asc   = "ASC"
+	order_by_desc  = "DESC"
+	order_by_limit = "ALL"
 )
+
+func Filter(column, ask_desc, limit, offset string) *filter {
+	if column == "" {
+		column = "created_at"
+	}
+	if ask_desc == "" || (ask_desc != order_by_asc && ask_desc != order_by_desc) {
+		ask_desc = order_by_asc
+	}
+	if limit == "" && limit != order_by_limit {
+		limit = order_by_limit
+	}
+	if offset == "" {
+		offset = "0"
+	}
+	return &filter{
+		order_by_collumn:  column,
+		order_by_asc_desc: ask_desc,
+		order_by_limit:    limit,
+		order_by_offset:   offset,
+	}
+}
 
 // Получение транзакции по id
 func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, error) {
@@ -27,13 +56,18 @@ func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, err
 }
 
 // Получение всех транзакций из БД в slice
-func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
+func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransaction, error) {
 	// TODO:
-	// 1. order by по дате создания
+	// 1. не принимает параметр ALL для limit
 	transfSlice := []*models.InternalTransaction{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount, created_at 
-	FROM transactions ORDER BY created_at;`)
+	FROM transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
+		filt.order_by_collumn,
+		filt.order_by_asc_desc,
+		filt.order_by_limit,
+		filt.order_by_offset,
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,8 +86,7 @@ func (db *DB) ListInternalTransaction() ([]*models.InternalTransaction, error) {
 // Запись транзакций в БД
 func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
 	// todo
-	// 1. добавить дату создания
-	// 2. изменение баланса
+	// 1. изменение баланса
 	if _, err := db.conn.Exec(`
 	INSERT INTO transactions (account_sender, account_recipient, amount, created_at) 
 	VALUES (

@@ -2,6 +2,7 @@ package tests
 
 import (
 	"api-go/cmd/app"
+	"api-go/internal/postgredb"
 	"api-go/pkg/models"
 	"fmt"
 	"log"
@@ -18,7 +19,9 @@ func TestDB(t *testing.T) {
 		db.SaveInternalTransaction(message.Msg)
 	}
 
-	resData, err := db.ListInternalTransaction()
+	filter := postgredb.Filter("amount", "DESC", "ALL", "0")
+
+	resData, err := db.ListInternalTransaction(filter)
 	if err != nil {
 		log.Fatal("error")
 	}

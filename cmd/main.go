@@ -1,6 +1,9 @@
 package main
 
-import "api-go/cmd/app"
+import (
+	"api-go/cmd/app"
+	"api-go/internal/postgredb"
+)
 
 func main() {
 
@@ -15,8 +18,9 @@ func main() {
 
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
+	filter := postgredb.Filter("", "", "", "")
 
-	_, _ = db.ListInternalTransaction()
+	_, _ = db.ListInternalTransaction(filter)
 }
 
 // var usr = &models.Users{
