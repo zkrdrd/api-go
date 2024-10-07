@@ -17,6 +17,7 @@ type InternalTransaction struct {
 	AccountSender    string
 	AccountRecipient string
 	Amount           string
+	CreatedAt        string
 }
 
 // TODO:

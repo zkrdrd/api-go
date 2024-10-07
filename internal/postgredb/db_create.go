@@ -20,7 +20,8 @@ func CreateTableDB() {
 		id SERIAL PRIMARY KEY,
 		account_sender VARCHAR(255) NOT NULL,
 		account_recipient VARCHAR(255) NOT NULL,
-		amount VARCHAR(255) NOT NULL);`
+		amount VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP NOT NULL);`
 
 	fmt.Print(createDB, createTableCustomers, createTableTransactions)
 }

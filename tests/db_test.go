@@ -33,6 +33,9 @@ func TestDB(t *testing.T) {
 		if TestValue[key].Msg.Amount != value.Amount {
 			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].Msg.Amount, value.Amount))
 		}
+		if TestValue[key].Msg.CreatedAt != value.CreatedAt {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].Msg.CreatedAt, value.CreatedAt))
+		}
 	}
 }
 
@@ -46,6 +49,7 @@ var TestValue = []struct {
 			AccountSender:    `1`,
 			AccountRecipient: `2`,
 			Amount:           `50`,
+			CreatedAt:        `2024-10-06T15:34:43+05:00`,
 		},
 	},
 	{
@@ -53,6 +57,7 @@ var TestValue = []struct {
 			AccountSender:    `3`,
 			AccountRecipient: `4`,
 			Amount:           `500`,
+			CreatedAt:        `2024-10-06T15:35:43+05:00`,
 		},
 	},
 	{
@@ -60,6 +65,7 @@ var TestValue = []struct {
 			AccountSender:    `5`,
 			AccountRecipient: `6`,
 			Amount:           `5000`,
+			CreatedAt:        `2024-10-06T15:36:43+05:00`,
 		},
 	},
 	{
@@ -67,6 +73,7 @@ var TestValue = []struct {
 			AccountSender:    `7`,
 			AccountRecipient: `8`,
 			Amount:           `50000`,
+			CreatedAt:        `2024-10-06T15:37:43+05:00`,
 		},
 	},
 	{
@@ -74,6 +81,7 @@ var TestValue = []struct {
 			AccountSender:    `9`,
 			AccountRecipient: `10`,
 			Amount:           `500000`,
+			CreatedAt:        `2024-10-06T15:38:43+05:00`,
 		},
 	},
 }
