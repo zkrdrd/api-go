@@ -94,8 +94,6 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransacti
 
 // Запись транзакций в БД
 func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
-	// todo
-	// 1. изменение баланса
 	if _, err := db.conn.Exec(`
 	INSERT INTO internal_transactions (account_sender, account_recipient, amount, created_at) 
 	VALUES (

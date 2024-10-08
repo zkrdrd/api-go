@@ -39,7 +39,15 @@ const (
 		amount VARCHAR(255) NOT NULL,
 		created_at TIMESTAMP WITH TIME ZONE NOT NULL);`
 
+	createTableAccountBalance = `
+	CREATE TABLE account_balance(
+		id SERIAL PRIMARY KEY,
+		account int NOT NULL,
+		amount VARCHAR(255) NOT NULL);`
+
+	dropTableCustomers            = `DROP TABLE customers;`
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
+	dropTableAccountBalance       = `DROP TABLE account_balance;`
 )
 
 // Инициализация соединения с БД
@@ -69,10 +77,22 @@ func CreateDB() {
 	fmt.Print(createDB, createTableCustomers, createTableInternalTransactions)
 }
 
-// Удаление Всех данных из табилцы iternal_transaction
+// Пересоздание табилцы iternal_transaction
 func (db *DB) RecreateTableInternalTransactions() {
 	db.conn.Exec(dropTableInternalTransactions)
 	db.conn.Exec(createTableInternalTransactions)
+}
+
+// Пересоздание табилцы account_balacnce
+func (db *DB) RecreateTableAccountBalance() {
+	db.conn.Exec(dropTableAccountBalance)
+	db.conn.Exec(createTableAccountBalance)
+}
+
+// Пересоздание табилцы customers
+func (db *DB) RecreateTableCustomers() {
+	db.conn.Exec(dropTableCustomers)
+	db.conn.Exec(createTableCustomers)
 }
 
 // Удаление базы данных
