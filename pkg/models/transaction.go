@@ -19,6 +19,3 @@ type InternalTransaction struct {
 	Amount           string
 	CreatedAt        string
 }
-
-// TODO:
-// 1. Добавить дату создания

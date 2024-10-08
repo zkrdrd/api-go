@@ -51,13 +51,13 @@ func (db *DB) CountInternalTransactions() (int, error) {
 }
 
 // Получение транзакции по id
-func (db *DB) GetInternalTrasaction(id string) (*models.InternalTransaction, error) {
+func (db *DB) GetInternalTrasaction(id int) (*models.InternalTransaction, error) {
 	transf := &models.InternalTransaction{}
 	if err := db.conn.QueryRow(`
 	SELECT account_sender, account_recipient, amount, created_at 
 	FROM internal_transactions WHERE id = $1;`, id).Scan(
-		&transf.AccountRecipient,
 		&transf.AccountSender,
+		&transf.AccountRecipient,
 		&transf.Amount,
 		&transf.CreatedAt); err != nil {
 		log.Print(err)
