@@ -13,13 +13,13 @@ func TestDB(t *testing.T) {
 
 	dbconf, _ := app.ParseDBConfig("D:\\Programming\\api-go\\ConConf.json")
 	db, _ := dbconf.NewDB()
-	db.DeleteAllRowsInTableTransactions()
+	db.RecreateTableInternalTransactions()
 
 	for _, message := range TestValue {
 		db.SaveInternalTransaction(message.Msg)
 	}
 
-	count, _ := db.GetRowsCountInternalTransactions()
+	count, _ := db.CountInternalTransactions()
 
 	filterInternalTransactions := postgredb.FilterInternalTransaction("amount", "DESC", count, 0)
 

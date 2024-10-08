@@ -21,6 +21,27 @@ type DB struct {
 	conn *sql.DB
 }
 
+const (
+	createDB = `CREATE DATABASE api;`
+
+	createTableCustomers = `
+	CREATE TABLE customers(
+		id SERIAL PRIMARY KEY,
+		first_name VARCHAR(255) NOT NULL,
+		last_name VARCHAR(255) NOT NULL,
+		middle_name VARCHAR(255));`
+
+	createTableInternalTransactions = `
+	CREATE TABLE internal_transactions(
+		id SERIAL PRIMARY KEY,
+		account_sender VARCHAR(255) NOT NULL,
+		account_recipient VARCHAR(255) NOT NULL,
+		amount VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE NOT NULL);`
+
+	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
+)
+
 // Инициализация соединения с БД
 func (dbconf *DBConfig) NewDB() (*DB, error) {
 	db, err := sql.Open("postgres",
@@ -45,32 +66,13 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 }
 
 func CreateDB() {
-	createDB := `CREATE DATABASE api;`
-
-	// todo
-	// 1. Добавить дату создания
-
-	createTableCustomers := `
-	CREATE TABLE customers(
-		id SERIAL PRIMARY KEY,
-		first_name VARCHAR(255) NOT NULL,
-		last_name VARCHAR(255) NOT NULL,
-		middle_name VARCHAR(255));`
-
-	createTableTransactions := `
-	CREATE TABLE internal_transactions(
-		id SERIAL PRIMARY KEY,
-		account_sender VARCHAR(255) NOT NULL,
-		account_recipient VARCHAR(255) NOT NULL,
-		amount VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP NOT NULL);`
-
-	fmt.Print(createDB, createTableCustomers, createTableTransactions)
+	fmt.Print(createDB, createTableCustomers, createTableInternalTransactions)
 }
 
 // Удаление Всех данных из табилцы iternal_transaction
-func (db *DB) DeleteAllRowsInTableTransactions() {
-	db.conn.Query(`TRUNCATE TABLE transactions;`)
+func (db *DB) RecreateTableInternalTransactions() {
+	db.conn.Exec(dropTableInternalTransactions)
+	db.conn.Exec(createTableInternalTransactions)
 }
 
 // Удаление базы данных
