@@ -18,7 +18,7 @@ func main() {
 
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
-	filter := postgredb.Filter("", "", "", "")
+	filter := postgredb.FilterInternalTransaction("", "", 0, 0)
 
 	_, _ = db.ListInternalTransaction(filter)
 }
