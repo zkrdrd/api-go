@@ -19,7 +19,7 @@ func TestDB(t *testing.T) {
 		db.SaveInternalTransaction(message.Msg)
 	}
 
-	filter := postgredb.Filter("amount", "DESC", "ALL", "0")
+	filter := postgredb.Filter("amount", "DESK", "ALL", "0")
 
 	resData, err := db.ListInternalTransaction(filter)
 	if err != nil {

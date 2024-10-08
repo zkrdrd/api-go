@@ -15,9 +15,14 @@ type filter struct {
 const (
 	order_by_asc   = "ASC"
 	order_by_desc  = "DESC"
-	order_by_limit = "ALL"
+	order_by_limit = "(SELECT COUNT(id) FROM transactions)"
 )
 
+// Определение фильтра для запроса
+// column - Колонка по которой будет производиться фильтрация default "created_at";
+// ask_desc - Фильтрация "ASC" от меньшега к большему, "DESC" от большега к меньшему, default "ASC";
+// limit - "число" сколько элементов брать default "ALL";
+// offset - "число" сколько элементов пропустить default "0";
 func Filter(column, ask_desc, limit, offset string) *filter {
 	if column == "" {
 		column = "created_at"
@@ -25,7 +30,7 @@ func Filter(column, ask_desc, limit, offset string) *filter {
 	if ask_desc == "" || (ask_desc != order_by_asc && ask_desc != order_by_desc) {
 		ask_desc = order_by_asc
 	}
-	if limit == "" && limit != order_by_limit {
+	if limit == "" || limit == "ALL" {
 		limit = order_by_limit
 	}
 	if offset == "" {
