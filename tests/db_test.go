@@ -19,9 +19,11 @@ func TestDB(t *testing.T) {
 		db.SaveInternalTransaction(message.Msg)
 	}
 
-	filter := postgredb.Filter("amount", "DESK", "ALL", "0")
+	count, _ := db.GetRowsCountInternalTransactions()
 
-	resData, err := db.ListInternalTransaction(filter)
+	filterInternalTransactions := postgredb.FilterInternalTransaction("amount", "DESC", count, 0)
+
+	resData, err := db.ListInternalTransaction(filterInternalTransactions)
 	if err != nil {
 		log.Fatal("error")
 	}
@@ -51,7 +53,7 @@ var TestValue = []struct {
 		Msg: &models.InternalTransaction{
 			AccountSender:    `1`,
 			AccountRecipient: `2`,
-			Amount:           `50`,
+			Amount:           `500000`,
 			CreatedAt:        `2024-10-06T15:34:43+05:00`,
 		},
 	},
@@ -59,7 +61,7 @@ var TestValue = []struct {
 		Msg: &models.InternalTransaction{
 			AccountSender:    `3`,
 			AccountRecipient: `4`,
-			Amount:           `500`,
+			Amount:           `50000`,
 			CreatedAt:        `2024-10-06T15:35:43+05:00`,
 		},
 	},
@@ -75,7 +77,7 @@ var TestValue = []struct {
 		Msg: &models.InternalTransaction{
 			AccountSender:    `7`,
 			AccountRecipient: `8`,
-			Amount:           `50000`,
+			Amount:           `500`,
 			CreatedAt:        `2024-10-06T15:37:43+05:00`,
 		},
 	},
@@ -83,7 +85,7 @@ var TestValue = []struct {
 		Msg: &models.InternalTransaction{
 			AccountSender:    `9`,
 			AccountRecipient: `10`,
-			Amount:           `500000`,
+			Amount:           `50`,
 			CreatedAt:        `2024-10-06T15:38:43+05:00`,
 		},
 	},
