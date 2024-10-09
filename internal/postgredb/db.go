@@ -42,7 +42,7 @@ const (
 	createTableAccountBalance = `
 	CREATE TABLE account_balance(
 		id SERIAL PRIMARY KEY,
-		account int NOT NULL,
+		account int NOT NULL UNIQUE,
 		amount VARCHAR(255) NOT NULL);`
 
 	dropTableCustomers            = `DROP TABLE customers;`

@@ -25,7 +25,7 @@ func TestDB(t *testing.T) {
 func customers(t *testing.T, db *postgredb.DB) {
 	db.RecreateTableCustomers()
 
-	for _, message := range TestValue {
+	for _, message := range TestValueCustomers {
 		if err := db.SaveUser(message.MsgCustomers); err != nil {
 			t.Error(fmt.Errorf(`error "SaveUser" %v`, err))
 		}
@@ -35,17 +35,17 @@ func customers(t *testing.T, db *postgredb.DB) {
 	if err != nil {
 		t.Error(fmt.Errorf(`error "GetUser" %v`, err))
 	}
-	if TestValue[0].MsgCustomers.FirstName != res.FirstName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgCustomers.FirstName, res.FirstName))
+	if TestValueCustomers[0].MsgCustomers.FirstName != res.FirstName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.FirstName, res.FirstName))
 	}
-	if TestValue[0].MsgCustomers.LastName != res.LastName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgCustomers.LastName, res.LastName))
+	if TestValueCustomers[0].MsgCustomers.LastName != res.LastName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.LastName, res.LastName))
 	}
-	if TestValue[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestValueCustomers[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
-	if TestValue[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestValueCustomers[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
 }
 
@@ -53,30 +53,23 @@ func customers(t *testing.T, db *postgredb.DB) {
 func accountBalance(t *testing.T, db *postgredb.DB) {
 	db.RecreateTableAccountBalance()
 
-	for _, message := range TestValue {
+	for _, message := range TestValueAccountBalance {
 		if err := db.SaveAccountBalance(message.MsgAccountBalance); err != nil {
 			t.Error(fmt.Errorf(`error "SaveAccountBalance" %v`, err))
 		}
 	}
 
-	for _, message := range TestValue {
-		casheIn := &models.CacheIn{
-			Account: message.MsgInternalTransaction.AccountSender,
-			Amount:  message.MsgInternalTransaction.AccountSender,
-		}
-		casheOut := &models.CacheOut{
-			Account: TestValue[0].MsgInternalTransaction.AccountRecipient,
-			Amount:  TestValue[0].MsgInternalTransaction.AccountRecipient,
-		}
+	for _, message := range TestValueInternalTransaction {
 
-		res, err := db.GetAccountBalance(casheIn.Account)
-		if err != nil {
-			t.Error(fmt.Errorf(`error "GetAccountBalance" %v`, err))
-		}
+		CacheIn, CacheOut := postgredb.SeparationInternalTransactionToCahceInOut(message.MsgInternalTransaction)
 
-		// TODO:
-		// 1. Добавить обработчик балансов прибавить убавить баланс
-		// 2. Проверка на существование пользователя
+		if err := db.SubtractAccountBalance(CacheOut); err != nil {
+			t.Error(fmt.Errorf(`error "ReduceAccountBalance" %v`, err))
+		} else {
+			if err := db.AddAccountBalance(CacheIn); err != nil {
+				t.Error(fmt.Errorf(`error "AddAccountBalance" %v`, err))
+			}
+		}
 	}
 
 }
@@ -85,7 +78,7 @@ func accountBalance(t *testing.T, db *postgredb.DB) {
 func internalTransactions(t *testing.T, db *postgredb.DB) {
 	db.RecreateTableInternalTransactions()
 
-	for _, message := range TestValue {
+	for _, message := range TestValueInternalTransaction {
 		if err := db.SaveInternalTransaction(message.MsgInternalTransaction); err != nil {
 			t.Error(fmt.Errorf(`error %v`, err))
 		}
@@ -107,17 +100,17 @@ func internalTransactions(t *testing.T, db *postgredb.DB) {
 		t.Error(fmt.Errorf(`error "GetInternalTrasaction" %v`, err))
 	}
 
-	if TestValue[0].MsgInternalTransaction.AccountSender != res.AccountSender {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgInternalTransaction.AccountSender, res.AccountSender))
+	if TestValueInternalTransaction[0].MsgInternalTransaction.AccountSender != res.AccountSender {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.AccountSender, res.AccountSender))
 	}
-	if TestValue[0].MsgInternalTransaction.AccountRecipient != res.AccountRecipient {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgInternalTransaction.AccountRecipient, res.AccountRecipient))
+	if TestValueInternalTransaction[0].MsgInternalTransaction.AccountRecipient != res.AccountRecipient {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.AccountRecipient, res.AccountRecipient))
 	}
-	if TestValue[0].MsgInternalTransaction.Amount != res.Amount {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgInternalTransaction.Amount, res.Amount))
+	if TestValueInternalTransaction[0].MsgInternalTransaction.Amount != res.Amount {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.Amount, res.Amount))
 	}
-	if TestValue[0].MsgInternalTransaction.CreatedAt != res.CreatedAt {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValue[0].MsgInternalTransaction.CreatedAt, res.CreatedAt))
+	if TestValueInternalTransaction[0].MsgInternalTransaction.CreatedAt != res.CreatedAt {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.CreatedAt, res.CreatedAt))
 	}
 
 	resData, err := db.ListInternalTransaction(filterInternalTransactions)
@@ -126,42 +119,30 @@ func internalTransactions(t *testing.T, db *postgredb.DB) {
 	}
 
 	for key, value := range resData {
-		if TestValue[key].MsgInternalTransaction.AccountSender != value.AccountSender {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].MsgInternalTransaction.AccountSender, value.AccountSender))
+		if TestValueInternalTransaction[key].MsgInternalTransaction.AccountSender != value.AccountSender {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.AccountSender, value.AccountSender))
 		}
-		if TestValue[key].MsgInternalTransaction.AccountRecipient != value.AccountRecipient {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].MsgInternalTransaction.AccountRecipient, value.AccountRecipient))
+		if TestValueInternalTransaction[key].MsgInternalTransaction.AccountRecipient != value.AccountRecipient {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.AccountRecipient, value.AccountRecipient))
 		}
-		if TestValue[key].MsgInternalTransaction.Amount != value.Amount {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].MsgInternalTransaction.Amount, value.Amount))
+		if TestValueInternalTransaction[key].MsgInternalTransaction.Amount != value.Amount {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.Amount, value.Amount))
 		}
-		if TestValue[key].MsgInternalTransaction.CreatedAt != value.CreatedAt {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValue[key].MsgInternalTransaction.CreatedAt, value.CreatedAt))
+		if TestValueInternalTransaction[key].MsgInternalTransaction.CreatedAt != value.CreatedAt {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.CreatedAt, value.CreatedAt))
 		}
 	}
 }
 
 var (
-	TestValue = []struct {
-		MsgCustomers           *models.Users
-		MsgAccountBalance      *models.CacheIn
-		MsgInternalTransaction *models.InternalTransaction
+	TestValueCustomers = []struct {
+		MsgCustomers *models.Users
 	}{
 		{
 			MsgCustomers: &models.Users{
 				FirstName:  "A",
 				LastName:   "A",
 				MiddleName: "A",
-			},
-			MsgAccountBalance: &models.CacheIn{
-				Account: "1",
-				Amount:  "90000000",
-			},
-			MsgInternalTransaction: &models.InternalTransaction{
-				AccountSender:    `1`,
-				AccountRecipient: `2`,
-				Amount:           `500000`,
-				CreatedAt:        `2024-10-06T15:34:43+05:00`,
 			},
 		},
 		{
@@ -170,32 +151,12 @@ var (
 				LastName:   "B",
 				MiddleName: "B",
 			},
-			MsgAccountBalance: &models.CacheIn{
-				Account: "2",
-				Amount:  "9000000",
-			},
-			MsgInternalTransaction: &models.InternalTransaction{
-				AccountSender:    `2`,
-				AccountRecipient: `3`,
-				Amount:           `50000`,
-				CreatedAt:        `2024-10-06T15:35:43+05:00`,
-			},
 		},
 		{
 			MsgCustomers: &models.Users{
 				FirstName:  "C",
 				LastName:   "C",
 				MiddleName: "C",
-			},
-			MsgAccountBalance: &models.CacheIn{
-				Account: "3",
-				Amount:  "900000",
-			},
-			MsgInternalTransaction: &models.InternalTransaction{
-				AccountSender:    `3`,
-				AccountRecipient: `4`,
-				Amount:           `5000`,
-				CreatedAt:        `2024-10-06T15:36:43+05:00`,
 			},
 		},
 		{
@@ -204,10 +165,79 @@ var (
 				LastName:   "D",
 				MiddleName: "D",
 			},
+		},
+		{
+			MsgCustomers: &models.Users{
+				FirstName:  "E",
+				LastName:   "E",
+				MiddleName: "E",
+			},
+		},
+	}
+
+	TestValueAccountBalance = []struct {
+		MsgAccountBalance *models.CacheIn
+	}{
+		{
+			MsgAccountBalance: &models.CacheIn{
+				Account: "1",
+				Amount:  "90000000",
+			},
+		},
+		{
+			MsgAccountBalance: &models.CacheIn{
+				Account: "2",
+				Amount:  "9000000",
+			},
+		},
+		{
+			MsgAccountBalance: &models.CacheIn{
+				Account: "3",
+				Amount:  "900000",
+			},
+		},
+		{
 			MsgAccountBalance: &models.CacheIn{
 				Account: "4",
 				Amount:  "90000",
 			},
+		},
+		{
+			MsgAccountBalance: &models.CacheIn{
+				Account: "5",
+				Amount:  "9000",
+			},
+		},
+	}
+
+	TestValueInternalTransaction = []struct {
+		MsgInternalTransaction *models.InternalTransaction
+	}{
+		{
+			MsgInternalTransaction: &models.InternalTransaction{
+				AccountSender:    `1`,
+				AccountRecipient: `2`,
+				Amount:           `500000`,
+				CreatedAt:        `2024-10-06T15:34:43+05:00`,
+			},
+		},
+		{
+			MsgInternalTransaction: &models.InternalTransaction{
+				AccountSender:    `2`,
+				AccountRecipient: `3`,
+				Amount:           `50000`,
+				CreatedAt:        `2024-10-06T15:35:43+05:00`,
+			},
+		},
+		{
+			MsgInternalTransaction: &models.InternalTransaction{
+				AccountSender:    `3`,
+				AccountRecipient: `4`,
+				Amount:           `5000`,
+				CreatedAt:        `2024-10-06T15:36:43+05:00`,
+			},
+		},
+		{
 			MsgInternalTransaction: &models.InternalTransaction{
 				AccountSender:    `4`,
 				AccountRecipient: `5`,
@@ -216,15 +246,6 @@ var (
 			},
 		},
 		{
-			MsgCustomers: &models.Users{
-				FirstName:  "E",
-				LastName:   "E",
-				MiddleName: "E",
-			},
-			MsgAccountBalance: &models.CacheIn{
-				Account: "5",
-				Amount:  "9000",
-			},
 			MsgInternalTransaction: &models.InternalTransaction{
 				AccountSender:    `5`,
 				AccountRecipient: `1`,
