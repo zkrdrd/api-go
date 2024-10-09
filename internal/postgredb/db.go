@@ -43,7 +43,9 @@ const (
 	CREATE TABLE account_balance(
 		id SERIAL PRIMARY KEY,
 		account int NOT NULL UNIQUE,
-		amount VARCHAR(255) NOT NULL);`
+		amount VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE,
+		updated_at TIMESTAMP WITH TIME ZONE);`
 
 	dropTableCustomers            = `DROP TABLE customers;`
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
@@ -85,8 +87,12 @@ func (db *DB) RecreateTableInternalTransactions() {
 
 // Пересоздание табилцы account_balacnce
 func (db *DB) RecreateTableAccountBalance() {
-	db.conn.Exec(dropTableAccountBalance)
-	db.conn.Exec(createTableAccountBalance)
+	if _, err := db.conn.Exec(dropTableAccountBalance); err != nil {
+		log.Print(err)
+	}
+	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
+		log.Print(err)
+	}
 }
 
 // Пересоздание табилцы customers

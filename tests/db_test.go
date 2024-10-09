@@ -2,8 +2,10 @@ package tests
 
 import (
 	"api-go/cmd/app"
+	"api-go/internal/business"
 	"api-go/internal/postgredb"
 	"api-go/pkg/models"
+	"context"
 	"fmt"
 	"testing"
 )
@@ -59,16 +61,13 @@ func accountBalance(t *testing.T, db *postgredb.DB) {
 		}
 	}
 
+	a := &business.Accouting{
+		DB: db,
+	}
+
 	for _, message := range TestValueInternalTransaction {
-
-		CacheIn, CacheOut := postgredb.SeparationInternalTransactionToCahceInOut(message.MsgInternalTransaction)
-
-		if err := db.SubtractAccountBalance(CacheOut); err != nil {
-			t.Error(fmt.Errorf(`error "ReduceAccountBalance" %v`, err))
-		} else {
-			if err := db.AddAccountBalance(CacheIn); err != nil {
-				t.Error(fmt.Errorf(`error "AddAccountBalance" %v`, err))
-			}
+		if err := a.InternalTransfer(context.Background(), message.MsgInternalTransaction); err != nil {
+			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
 		}
 	}
 
@@ -176,36 +175,46 @@ var (
 	}
 
 	TestValueAccountBalance = []struct {
-		MsgAccountBalance *models.CacheIn
+		MsgAccountBalance *models.Balance
 	}{
 		{
-			MsgAccountBalance: &models.CacheIn{
-				Account: "1",
-				Amount:  "90000000",
+			MsgAccountBalance: &models.Balance{
+				Account:   "1",
+				Amount:    "90000000",
+				CreatedAt: "2024-10-04T15:34:43+05:00",
+				UpdatedAt: "",
 			},
 		},
 		{
-			MsgAccountBalance: &models.CacheIn{
-				Account: "2",
-				Amount:  "9000000",
+			MsgAccountBalance: &models.Balance{
+				Account:   "2",
+				Amount:    "9000000",
+				CreatedAt: "2024-10-04T15:35:43+05:00",
+				UpdatedAt: "",
 			},
 		},
 		{
-			MsgAccountBalance: &models.CacheIn{
-				Account: "3",
-				Amount:  "900000",
+			MsgAccountBalance: &models.Balance{
+				Account:   "3",
+				Amount:    "900000",
+				CreatedAt: "2024-10-04T15:36:43+05:00",
+				UpdatedAt: "",
 			},
 		},
 		{
-			MsgAccountBalance: &models.CacheIn{
-				Account: "4",
-				Amount:  "90000",
+			MsgAccountBalance: &models.Balance{
+				Account:   "4",
+				Amount:    "90000",
+				CreatedAt: "2024-10-04T15:37:43+05:00",
+				UpdatedAt: "",
 			},
 		},
 		{
-			MsgAccountBalance: &models.CacheIn{
-				Account: "5",
-				Amount:  "9000",
+			MsgAccountBalance: &models.Balance{
+				Account:   "5",
+				Amount:    "9000",
+				CreatedAt: "2024-10-04T15:38:43+05:00",
+				UpdatedAt: "",
 			},
 		},
 	}
