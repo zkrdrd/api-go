@@ -51,8 +51,8 @@ func (db *DB) CountInternalTransactions() (int, error) {
 }
 
 // Получение транзакции по id
-func (db *DB) GetInternalTrasaction(id int) (*models.InternalTransaction, error) {
-	transf := &models.InternalTransaction{}
+func (db *DB) GetInternalTrasaction(id int) (*models.InternalTranser, error) {
+	transf := &models.InternalTranser{}
 	if err := db.conn.QueryRow(`
 	SELECT account_sender, account_recipient, amount, created_at 
 	FROM internal_transactions WHERE id = $1;`, id).Scan(
@@ -66,8 +66,8 @@ func (db *DB) GetInternalTrasaction(id int) (*models.InternalTransaction, error)
 }
 
 // Получение всех транзакций из БД в slice
-func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransaction, error) {
-	transfSlice := []*models.InternalTransaction{}
+func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTranser, error) {
+	transfSlice := []*models.InternalTranser{}
 	rows, err := db.conn.Query(`
 	SELECT account_sender, account_recipient, amount, created_at 
 	FROM internal_transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
@@ -82,7 +82,7 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransacti
 	defer rows.Close()
 
 	for rows.Next() {
-		transf := &models.InternalTransaction{}
+		transf := &models.InternalTranser{}
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount, &transf.CreatedAt); err != nil {
 			return nil, err
 		}
@@ -92,18 +92,20 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransacti
 }
 
 // Запись транзакций в БД
-func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error {
+func (db *DB) SaveInternalTransaction(transf *models.Transactions) error {
 	if _, err := db.conn.Exec(`
-	INSERT INTO internal_transactions (account_sender, account_recipient, amount, created_at) 
+	INSERT INTO internal_transactions (account_sender, account_recipient, amount, created_at, transaction_type) 
 	VALUES (
 	$1, --AccountSender
     $2, --AccountRecipient
     $3, --Amount
-	$4); --CreatedAt`,
+	$4, --CreatedAt
+	$5); --TransactionType`,
 		transf.AccountSender,
 		transf.AccountRecipient,
 		transf.Amount,
-		transf.CreatedAt); err != nil {
+		transf.CreatedAt,
+		transf.TransactionType); err != nil {
 		return err
 	}
 	return nil

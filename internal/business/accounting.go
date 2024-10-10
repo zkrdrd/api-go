@@ -30,7 +30,7 @@ func dateTime() string {
 }
 
 // Тут я пополняю счет наличными
-func (a *Accouting) CacheOut(ctx context.Context, cacheOut *models.CacheOut) error {
+func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
 	// TODO:
 	// 1. Блокирую баланс
 	// 2. Разблокирую баланс
@@ -56,11 +56,23 @@ func (a *Accouting) CacheOut(ctx context.Context, cacheOut *models.CacheOut) err
 		return err
 	}
 
+	transaction := &models.Transactions{
+		AccountSender:    accountSender.Account,
+		AccountRecipient: accountSender.Account,
+		Amount:           accountSender.Amount,
+		CreatedAt:        dateTime(),
+		TransactionType:  "cahce out",
+	}
+
+	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Тут я снимаю со счета начличные
-func (a *Accouting) CacheIn(ctx context.Context, cacheIn *models.CacheIn) error {
+func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	accountRecipient, err := a.DB.GetAccountBalance(cacheIn.Account)
 	if err != nil {
 		return err
@@ -76,11 +88,23 @@ func (a *Accouting) CacheIn(ctx context.Context, cacheIn *models.CacheIn) error 
 		return err
 	}
 
+	transaction := &models.Transactions{
+		AccountSender:    accountRecipient.Account,
+		AccountRecipient: accountRecipient.Account,
+		Amount:           accountRecipient.Amount,
+		CreatedAt:        dateTime(),
+		TransactionType:  "Cashce in",
+	}
+
+	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Тут я перевожу деньги между внетренними счетами
-func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.InternalTransaction) error {
+func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.InternalTranser) error {
 	accountSender, err := a.DB.GetAccountBalance(transfer.AccountSender)
 	if err != nil {
 		log.Print(err)
@@ -112,6 +136,18 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	accountRecipient.UpdatedAt = dateTime()
 
 	if err := a.DB.UpdateAccountBalance(accountRecipient); err != nil {
+		return err
+	}
+
+	transaction := &models.Transactions{
+		AccountSender:    accountSender.Account,
+		AccountRecipient: accountRecipient.Account,
+		Amount:           transfer.Amount,
+		CreatedAt:        dateTime(),
+		TransactionType:  "Transfer",
+	}
+
+	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
 		return err
 	}
 

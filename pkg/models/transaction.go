@@ -1,13 +1,13 @@
 package models
 
 // я тип - я описываю пополнение наличными
-type CacheIn struct {
+type CashIn struct {
 	Account string
 	Amount  string
 }
 
 // я тип - я описываю снятие наличными
-type CacheOut struct {
+type CashOut struct {
 	Account string
 	Amount  string
 }
@@ -20,9 +20,18 @@ type Balance struct {
 }
 
 // Я тип - я описываю перевод с одного счета на другой
-type InternalTransaction struct {
+type InternalTranser struct {
 	AccountSender    string
 	AccountRecipient string
 	Amount           string
 	CreatedAt        string
+}
+
+// Я тип - я описываю перевод с одного счета на другой
+type Transactions struct {
+	AccountSender    string
+	AccountRecipient string
+	Amount           string
+	CreatedAt        string
+	TransactionType  string
 }

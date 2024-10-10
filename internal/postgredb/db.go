@@ -37,7 +37,8 @@ const (
 		account_sender VARCHAR(255) NOT NULL,
 		account_recipient VARCHAR(255) NOT NULL,
 		amount VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP WITH TIME ZONE NOT NULL);`
+		created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+		transaction_type VARCHAR(255) NOT NULL);`
 
 	createTableAccountBalance = `
 	CREATE TABLE account_balance(
