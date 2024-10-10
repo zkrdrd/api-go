@@ -70,7 +70,6 @@ func accountBalance(t *testing.T, db *postgredb.DB) {
 			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
 		}
 	}
-
 }
 
 // test db InternalTransactions
