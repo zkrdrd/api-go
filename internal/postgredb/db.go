@@ -80,25 +80,36 @@ func CreateDB() {
 }
 
 // Пересоздание табилцы iternal_transaction
-func (db *DB) RecreateTableInternalTransactions() {
-	db.conn.Exec(dropTableInternalTransactions)
-	db.conn.Exec(createTableInternalTransactions)
+func (db *DB) RecreateTableInternalTransactions() error {
+	if _, err := db.conn.Exec(dropTableInternalTransactions); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableInternalTransactions); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Пересоздание табилцы account_balacnce
-func (db *DB) RecreateTableAccountBalance() {
+func (db *DB) RecreateTableAccountBalance() error {
 	if _, err := db.conn.Exec(dropTableAccountBalance); err != nil {
-		log.Print(err)
+		return err
 	}
 	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
-		log.Print(err)
+		return err
 	}
+	return nil
 }
 
 // Пересоздание табилцы customers
-func (db *DB) RecreateTableCustomers() {
-	db.conn.Exec(dropTableCustomers)
-	db.conn.Exec(createTableCustomers)
+func (db *DB) RecreateTableCustomers() error {
+	if _, err := db.conn.Exec(dropTableCustomers); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableCustomers); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Удаление базы данных

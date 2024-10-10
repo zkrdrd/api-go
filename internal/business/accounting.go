@@ -4,6 +4,7 @@ import (
 	"api-go/internal/postgredb"
 	"api-go/pkg/models"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -19,6 +20,10 @@ type Accouting struct {
 	//db *db.Conn
 }
 
+var (
+	ErrMoneyNotEnough = errors.New(`error money not enough`)
+)
+
 // return time as string format RFC3339 "2006-01-02T15:04:05Z07:00"
 func dateTime() string {
 	return time.Now().Format(time.RFC3339)
@@ -32,57 +37,45 @@ func (a *Accouting) CacheOut(ctx context.Context, cacheOut *models.CacheOut) err
 
 	// Обналичиваю средства
 	// Изменяю сумму баланса
-	getFromDB, err := a.DB.GetAccountBalance(cacheOut.Account)
+	accountSender, err := a.DB.GetAccountBalance(cacheOut.Account)
 	if err != nil {
-		log.Print(err)
 		return err
 	}
 
-	query, _ := strconv.ParseFloat(cacheOut.Amount, 32)
-	dbquery, _ := strconv.ParseFloat(getFromDB.Amount, 32)
+	amount, _ := strconv.ParseFloat(cacheOut.Amount, 32)
+	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
 
-	if query > dbquery {
-		return fmt.Errorf(`error money not enough`)
-	} else {
-		cahceInNew := &models.Balance{
-			Account:   cacheOut.Account,
-			Amount:    fmt.Sprintf("%.2f", dbquery-query),
-			UpdatedAt: dateTime(),
-		}
-
-		if err := a.DB.UpdateAccountBalance(cahceInNew); err != nil {
-			log.Fatal(err)
-			return err
-		}
+	if amount > senderBalance {
+		return ErrMoneyNotEnough
 	}
+
+	accountSender.Amount = fmt.Sprintf("%.2f", senderBalance-amount)
+	accountSender.UpdatedAt = dateTime()
+
+	if err := a.DB.UpdateAccountBalance(accountSender); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Тут я снимаю со счета начличные
 func (a *Accouting) CacheIn(ctx context.Context, cacheIn *models.CacheIn) error {
-	getFromDB, err := a.DB.GetAccountBalance(cacheIn.Account)
+	accountRecipient, err := a.DB.GetAccountBalance(cacheIn.Account)
 	if err != nil {
-		log.Print(err)
 		return err
 	}
-	query, _ := strconv.ParseFloat(cacheIn.Amount, 32)
-	dbquery, _ := strconv.ParseFloat(getFromDB.Amount, 32)
 
-	if query > dbquery {
-		return fmt.Errorf(`error money not enough`)
-	} else {
+	amount, _ := strconv.ParseFloat(cacheIn.Amount, 32)
+	recipientBalance, _ := strconv.ParseFloat(accountRecipient.Amount, 32)
 
-		cahceInNew := &models.Balance{
-			Account:   cacheIn.Account,
-			Amount:    fmt.Sprintf("%.2f", dbquery+query),
-			UpdatedAt: dateTime(),
-		}
+	accountRecipient.Amount = fmt.Sprintf("%.2f", recipientBalance+amount)
+	accountRecipient.UpdatedAt = dateTime()
 
-		if err := a.DB.UpdateAccountBalance(cahceInNew); err != nil {
-			log.Fatal(err)
-			return err
-		}
+	if err := a.DB.UpdateAccountBalance(accountRecipient); err != nil {
+		return err
 	}
+
 	return nil
 }
 
@@ -94,42 +87,31 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 		return err
 	}
 
-	senderAmount, _ := strconv.ParseFloat(transfer.Amount, 32)
+	amount, _ := strconv.ParseFloat(transfer.Amount, 32)
 	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
 
-	if senderAmount > senderBalance {
-		return fmt.Errorf(`error money not enough`)
-	} else {
+	if amount > senderBalance {
+		return ErrMoneyNotEnough
+	}
 
-		newBalance := &models.Balance{
-			Account:   accountSender.Account,
-			Amount:    fmt.Sprintf("%.2f", senderBalance-senderAmount),
-			UpdatedAt: dateTime(),
-		}
+	accountSender.Amount = fmt.Sprintf("%.2f", senderBalance-amount)
+	accountSender.UpdatedAt = dateTime()
 
-		if err := a.DB.UpdateAccountBalance(newBalance); err != nil {
-			log.Fatal(err)
-			return err
-		}
+	if err := a.DB.UpdateAccountBalance(accountSender); err != nil {
+		return err
 	}
 
 	accountRecipient, err := a.DB.GetAccountBalance(transfer.AccountRecipient)
 	if err != nil {
-		log.Print(err)
 		return err
 	}
 
-	recipientAmount, _ := strconv.ParseFloat(transfer.Amount, 32)
 	recipientBalance, _ := strconv.ParseFloat(accountRecipient.Amount, 32)
 
-	newBalance := &models.Balance{
-		Account:   accountRecipient.Account,
-		Amount:    fmt.Sprintf("%.2f", recipientBalance+recipientAmount),
-		UpdatedAt: dateTime(),
-	}
+	accountRecipient.Amount = fmt.Sprintf("%.2f", recipientBalance+amount)
+	accountRecipient.UpdatedAt = dateTime()
 
-	if err := a.DB.UpdateAccountBalance(newBalance); err != nil {
-		log.Fatal(err)
+	if err := a.DB.UpdateAccountBalance(accountRecipient); err != nil {
 		return err
 	}
 

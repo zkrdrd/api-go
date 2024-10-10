@@ -60,7 +60,6 @@ func (db *DB) GetInternalTrasaction(id int) (*models.InternalTransaction, error)
 		&transf.AccountRecipient,
 		&transf.Amount,
 		&transf.CreatedAt); err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return transf, nil
@@ -78,14 +77,14 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTransacti
 		filt.order_by_offset,
 	)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		transf := &models.InternalTransaction{}
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount, &transf.CreatedAt); err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		transfSlice = append(transfSlice, transf)
 	}
@@ -105,7 +104,6 @@ func (db *DB) SaveInternalTransaction(transf *models.InternalTransaction) error 
 		transf.AccountRecipient,
 		transf.Amount,
 		transf.CreatedAt); err != nil {
-		log.Fatal(err)
 		return err
 	}
 	return nil

@@ -2,7 +2,6 @@ package postgredb
 
 import (
 	"api-go/pkg/models"
-	"log"
 )
 
 // Получение пользователя из БД по id
@@ -12,7 +11,6 @@ func (db *DB) GetAccountBalance(id string) (*models.Balance, error) {
 	SELECT account, amount	FROM account_balance WHERE id = $1;`, id).Scan(
 		&balance.Account,
 		&balance.Amount); err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return balance, nil
@@ -29,7 +27,6 @@ func (db *DB) SaveAccountBalance(balance *models.Balance) error {
 		balance.Account,
 		balance.Amount,
 		balance.CreatedAt); err != nil {
-		log.Fatal(err)
 		return err
 	}
 	return nil
@@ -43,7 +40,6 @@ func (db *DB) UpdateAccountBalance(balance *models.Balance) error {
 		balance.Amount,
 		balance.UpdatedAt,
 		balance.Account); err != nil {
-		log.Fatal(err)
 		return err
 	}
 	return nil
