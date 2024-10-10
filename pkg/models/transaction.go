@@ -12,6 +12,13 @@ type CacheOut struct {
 	Amount  string
 }
 
+type Balance struct {
+	Account   string
+	Amount    string
+	CreatedAt string
+	UpdatedAt string
+}
+
 // Я тип - я описываю перевод с одного счета на другой
 type InternalTransaction struct {
 	AccountSender    string

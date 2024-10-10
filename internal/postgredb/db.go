@@ -39,7 +39,17 @@ const (
 		amount VARCHAR(255) NOT NULL,
 		created_at TIMESTAMP WITH TIME ZONE NOT NULL);`
 
+	createTableAccountBalance = `
+	CREATE TABLE account_balance(
+		id SERIAL PRIMARY KEY,
+		account int NOT NULL UNIQUE,
+		amount VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE,
+		updated_at TIMESTAMP WITH TIME ZONE);`
+
+	dropTableCustomers            = `DROP TABLE customers;`
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
+	dropTableAccountBalance       = `DROP TABLE account_balance;`
 )
 
 // Инициализация соединения с БД
@@ -69,10 +79,37 @@ func CreateDB() {
 	fmt.Print(createDB, createTableCustomers, createTableInternalTransactions)
 }
 
-// Удаление Всех данных из табилцы iternal_transaction
-func (db *DB) RecreateTableInternalTransactions() {
-	db.conn.Exec(dropTableInternalTransactions)
-	db.conn.Exec(createTableInternalTransactions)
+// Пересоздание табилцы iternal_transaction
+func (db *DB) RecreateTableInternalTransactions() error {
+	if _, err := db.conn.Exec(dropTableInternalTransactions); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableInternalTransactions); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Пересоздание табилцы account_balacnce
+func (db *DB) RecreateTableAccountBalance() error {
+	if _, err := db.conn.Exec(dropTableAccountBalance); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Пересоздание табилцы customers
+func (db *DB) RecreateTableCustomers() error {
+	if _, err := db.conn.Exec(dropTableCustomers); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableCustomers); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Удаление базы данных
