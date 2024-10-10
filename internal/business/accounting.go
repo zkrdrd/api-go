@@ -80,36 +80,48 @@ func (a *Accouting) CacheIn(ctx context.Context, cacheIn *models.CacheIn) error 
 
 // Тут я перевожу деньги между внетренними счетами
 func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.InternalTransaction) error {
-	cacheIn, cacheOut := a.SeparationInternalTransactionToCahceInOut(transfer)
-	a.ProcessingAccountBalance(cacheIn, cacheOut)
+	accountSender, err := a.DB.GetAccountBalance(transfer.AccountSender)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	senderAmount, _ := strconv.ParseFloat(transfer.Amount, 32)
+	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
+
+	if senderAmount > senderBalance {
+		return fmt.Errorf(`error money not enough`)
+	} else {
+
+		newBalance := &models.Balance{
+			Account: accountSender.Account,
+			Amount:  fmt.Sprintf("%.2f", senderBalance-senderAmount),
+		}
+
+		if err := a.DB.UpdateAccountBalance(newBalance); err != nil {
+			log.Fatal(err)
+			return err
+		}
+	}
+
+	accountRecipient, err := a.DB.GetAccountBalance(transfer.AccountRecipient)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	recipientAmount, _ := strconv.ParseFloat(transfer.Amount, 32)
+	recipientBalance, _ := strconv.ParseFloat(accountRecipient.Amount, 32)
+
+	newBalance := &models.Balance{
+		Account: accountRecipient.Account,
+		Amount:  fmt.Sprintf("%.2f", recipientBalance+recipientAmount),
+	}
+
+	if err := a.DB.UpdateAccountBalance(newBalance); err != nil {
+		log.Fatal(err)
+		return err
+	}
+
 	return nil
-}
-
-// Processing AccountBalance
-func (a *Accouting) ProcessingAccountBalance(cacheIn *models.CacheIn, cacheOut *models.CacheOut) error {
-
-	if cacheIn.Account != "" && cacheIn.Amount != "" {
-		a.CacheIn(context.Background(), cacheIn)
-	}
-	if cacheIn.Account != "" && cacheIn.Amount != "" {
-		a.CacheOut(context.Background(), cacheOut)
-	}
-
-	return nil
-}
-
-// разделение модели InternalTransation на модели CacheIn CacheOut
-func (a *Accouting) SeparationInternalTransactionToCahceInOut(internalTransactions *models.InternalTransaction) (*models.CacheIn, *models.CacheOut) {
-
-	cacheOut := &models.CacheOut{
-		Account: internalTransactions.AccountSender,
-		Amount:  internalTransactions.Amount,
-	}
-
-	cacheIn := &models.CacheIn{
-		Account: internalTransactions.AccountRecipient,
-		Amount:  internalTransactions.Amount,
-	}
-
-	return cacheIn, cacheOut
 }
