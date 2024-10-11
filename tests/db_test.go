@@ -19,18 +19,18 @@ func TestDB(t *testing.T) {
 	db.RecreateTableAccountBalance()
 	db.RecreateTableInternalTransactions()
 
-	customers(t, db)
+	customer(t, db)
 
-	accountBalance(t, db)
+	accountBalances(t, db)
 
 	//internalTransactions(t, db)
 
 }
 
 // test db customers
-func customers(t *testing.T, db *postgredb.DB) {
+func customer(t *testing.T, db *postgredb.DB) {
 
-	for _, message := range TestValueCustomers {
+	for _, message := range TestValueCustomer {
 		if err := db.SaveUser(message.MsgCustomers); err != nil {
 			t.Error(fmt.Errorf(`error "SaveUser" %v`, err))
 		}
@@ -40,24 +40,24 @@ func customers(t *testing.T, db *postgredb.DB) {
 	if err != nil {
 		t.Error(fmt.Errorf(`error "GetUser" %v`, err))
 	}
-	if TestValueCustomers[0].MsgCustomers.FirstName != res.FirstName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.FirstName, res.FirstName))
+	if TestValueCustomer[0].MsgCustomers.FirstName != res.FirstName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.FirstName, res.FirstName))
 	}
-	if TestValueCustomers[0].MsgCustomers.LastName != res.LastName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.LastName, res.LastName))
+	if TestValueCustomer[0].MsgCustomers.LastName != res.LastName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.LastName, res.LastName))
 	}
-	if TestValueCustomers[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestValueCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
-	if TestValueCustomers[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomers[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestValueCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
 }
 
 // test db account_balance
-func accountBalance(t *testing.T, db *postgredb.DB) {
+func accountBalances(t *testing.T, db *postgredb.DB) {
 
-	for _, message := range TestValueAccountBalance {
+	for _, message := range TestValueAccountBalances {
 		if err := db.SaveAccountBalance(message.MsgAccountBalance); err != nil {
 			t.Error(fmt.Errorf(`error "SaveAccountBalance" %v`, err))
 		}
@@ -67,13 +67,13 @@ func accountBalance(t *testing.T, db *postgredb.DB) {
 		DB: db,
 	}
 
-	for _, message := range TestMsgValueCashIn {
+	for _, message := range TestValueCasheIn {
 		if err := a.CashIn(context.Background(), message.MsgValueCashIn); err != nil {
 			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
 		}
 	}
 
-	for _, message := range TestValueInternalTransaction {
+	for _, message := range TestValueInternalTransactions {
 		if err := a.InternalTransfer(context.Background(), message.MsgInternalTransaction); err != nil {
 			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
 		}
@@ -143,7 +143,7 @@ func accountBalance(t *testing.T, db *postgredb.DB) {
 	}
 */
 var (
-	TestValueCustomers = []struct {
+	TestValueCustomer = []struct {
 		MsgCustomers *models.Users
 	}{
 		{
@@ -183,7 +183,7 @@ var (
 		},
 	}
 
-	TestValueAccountBalance = []struct {
+	TestValueAccountBalances = []struct {
 		MsgAccountBalance *models.Balance
 	}{
 		{
@@ -228,7 +228,7 @@ var (
 		},
 	}
 
-	TestMsgValueCashIn = []struct {
+	TestValueCasheIn = []struct {
 		MsgValueCashIn *models.CashIn
 	}{
 		{
@@ -263,7 +263,7 @@ var (
 		},
 	}
 
-	TestValueInternalTransaction = []struct {
+	TestValueInternalTransactions = []struct {
 		MsgInternalTransaction *models.InternalTranser
 	}{
 		{

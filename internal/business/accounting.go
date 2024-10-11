@@ -31,6 +31,10 @@ func dateTime() string {
 
 // Тут я пополняю счет наличными
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
+
+	if err := a.DB.StartTransaction(); err != nil {
+		return err
+	}
 	// TODO:
 	// 1. Блокирую баланс
 	// 2. Разблокирую баланс
@@ -39,6 +43,9 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	// Изменяю сумму баланса
 	accountSender, err := a.DB.GetAccountBalance(cacheOut.Account)
 	if err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -46,6 +53,9 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
 
 	if amount > senderBalance {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return ErrMoneyNotEnough
 	}
 
@@ -53,6 +63,9 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	accountSender.UpdatedAt = dateTime()
 
 	if err := a.DB.UpdateAccountBalance(accountSender); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -61,20 +74,34 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 		AccountRecipient: accountSender.Account,
 		Amount:           accountSender.Amount,
 		CreatedAt:        dateTime(),
-		TransactionType:  "cahce out",
+		TransactionType:  "Cash out",
 	}
 
 	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
+	if err := a.DB.CommitTransaction(); err != nil {
+		return err
+	}
 	return nil
 }
 
 // Тут я снимаю со счета начличные
 func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
+
+	if err := a.DB.StartTransaction(); err != nil {
+		return err
+	}
+
 	accountRecipient, err := a.DB.GetAccountBalance(cacheIn.Account)
 	if err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -85,6 +112,9 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	accountRecipient.UpdatedAt = dateTime()
 
 	if err := a.DB.UpdateAccountBalance(accountRecipient); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -93,18 +123,29 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 		AccountRecipient: accountRecipient.Account,
 		Amount:           accountRecipient.Amount,
 		CreatedAt:        dateTime(),
-		TransactionType:  "Cashce in",
+		TransactionType:  "Cash in",
 	}
 
 	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
+	if err := a.DB.CommitTransaction(); err != nil {
+		return err
+	}
 	return nil
 }
 
 // Тут я перевожу деньги между внетренними счетами
 func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.InternalTranser) error {
+
+	if err := a.DB.StartTransaction(); err != nil {
+		return err
+	}
+
 	accountSender, err := a.DB.GetAccountBalance(transfer.AccountSender)
 	if err != nil {
 		log.Print(err)
@@ -115,6 +156,9 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
 
 	if amount > senderBalance {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return ErrMoneyNotEnough
 	}
 
@@ -122,11 +166,17 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	accountSender.UpdatedAt = dateTime()
 
 	if err := a.DB.UpdateAccountBalance(accountSender); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
 	accountRecipient, err := a.DB.GetAccountBalance(transfer.AccountRecipient)
 	if err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -136,6 +186,9 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	accountRecipient.UpdatedAt = dateTime()
 
 	if err := a.DB.UpdateAccountBalance(accountRecipient); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
 		return err
 	}
 
@@ -148,6 +201,13 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	}
 
 	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
+		if err := a.DB.RollBackTransaction(); err != nil {
+			return err
+		}
+		return err
+	}
+
+	if err := a.DB.CommitTransaction(); err != nil {
 		return err
 	}
 

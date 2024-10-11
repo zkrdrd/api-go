@@ -51,6 +51,12 @@ const (
 	dropTableCustomers            = `DROP TABLE customers;`
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
 	dropTableAccountBalance       = `DROP TABLE account_balance;`
+	dropDB                        = `DROP DATABASE api;`
+
+	izolationTransaction = `SET TRANSACTION SERIALIZABLE;`
+	startTransaction     = `BEGIN;`
+	commitTransaction    = `COMMIT;`
+	rollbackTransaction  = `ROLLBACK;`
 )
 
 // Инициализация соединения с БД
@@ -76,8 +82,20 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 	return &DB{conn: db}, nil
 }
 
-func CreateDB() {
-	fmt.Print(createDB, createTableCustomers, createTableInternalTransactions)
+func (db *DB) CreateDB() error {
+	if _, err := db.conn.Exec(createDB); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableCustomers); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableInternalTransactions); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Пересоздание табилцы iternal_transaction
@@ -114,6 +132,36 @@ func (db *DB) RecreateTableCustomers() error {
 }
 
 // Удаление базы данных
-func (db *DB) DeleteDatabase() {
-	db.conn.Query(`DROP DATABASE api;`)
+func (db *DB) DeleteDatabase() error {
+	if _, err := db.conn.Exec(dropDB); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Начать транзакцию
+func (db *DB) StartTransaction() error {
+	if _, err := db.conn.Exec(izolationTransaction); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(startTransaction); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Завершить транзакцию записав изменения
+func (db *DB) CommitTransaction() error {
+	if _, err := db.conn.Exec(commitTransaction); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Завершить транзакцию откатив изменения
+func (db *DB) RollBackTransaction() error {
+	if _, err := db.conn.Exec(rollbackTransaction); err != nil {
+		return err
+	}
+	return nil
 }
