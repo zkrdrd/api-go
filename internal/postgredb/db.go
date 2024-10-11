@@ -37,9 +37,26 @@ const (
 		account_sender VARCHAR(255) NOT NULL,
 		account_recipient VARCHAR(255) NOT NULL,
 		amount VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP WITH TIME ZONE NOT NULL);`
+		created_at TIMESTAMP WITH TIME ZONE NOT NULL,
+		transaction_type VARCHAR(255) NOT NULL);`
 
+	createTableAccountBalance = `
+	CREATE TABLE account_balance(
+		id SERIAL PRIMARY KEY,
+		account int NOT NULL UNIQUE,
+		amount VARCHAR(255) NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE,
+		updated_at TIMESTAMP WITH TIME ZONE);`
+
+	dropTableCustomers            = `DROP TABLE customers;`
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
+	dropTableAccountBalance       = `DROP TABLE account_balance;`
+	dropDB                        = `DROP DATABASE api;`
+
+	izolationTransaction = `SET TRANSACTION SERIALIZABLE;`
+	startTransaction     = `BEGIN;`
+	commitTransaction    = `COMMIT;`
+	rollbackTransaction  = `ROLLBACK;`
 )
 
 // Инициализация соединения с БД
@@ -65,17 +82,75 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 	return &DB{conn: db}, nil
 }
 
-func CreateDB() {
-	fmt.Print(createDB, createTableCustomers, createTableInternalTransactions)
+func (db *DB) CreateDB() error {
+	if _, err := db.conn.Exec(createDB); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableCustomers); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableInternalTransactions); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
+		return err
+	}
+	return nil
 }
 
-// Удаление Всех данных из табилцы iternal_transaction
-func (db *DB) RecreateTableInternalTransactions() {
-	db.conn.Exec(dropTableInternalTransactions)
-	db.conn.Exec(createTableInternalTransactions)
+// Пересоздание табилцы iternal_transaction
+func (db *DB) RecreateTableInternalTransactions() error {
+	if _, err := db.conn.Exec(dropTableInternalTransactions); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableInternalTransactions); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Пересоздание табилцы account_balacnce
+func (db *DB) RecreateTableAccountBalance() error {
+	if _, err := db.conn.Exec(dropTableAccountBalance); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableAccountBalance); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Пересоздание табилцы customers
+func (db *DB) RecreateTableCustomers() error {
+	if _, err := db.conn.Exec(dropTableCustomers); err != nil {
+		return err
+	}
+	if _, err := db.conn.Exec(createTableCustomers); err != nil {
+		return err
+	}
+	return nil
 }
 
 // Удаление базы данных
-func (db *DB) DeleteDatabase() {
-	db.conn.Query(`DROP DATABASE api;`)
+func (db *DB) DeleteDatabase() error {
+	if _, err := db.conn.Exec(dropDB); err != nil {
+		return err
+	}
+	return nil
+}
+
+// Начать транзакцию
+func (db *DB) StartTransaction() {
+	db.conn.Exec(izolationTransaction)
+	db.conn.Exec(startTransaction)
+}
+
+// Завершить транзакцию записав изменения
+func (db *DB) CommitTransaction() {
+	db.conn.Exec(commitTransaction)
+}
+
+// Завершить транзакцию откатив изменения
+func (db *DB) RollBackTransaction() {
+	db.conn.Exec(rollbackTransaction)
 }

@@ -2,7 +2,6 @@ package postgredb
 
 import (
 	"api-go/pkg/models"
-	"log"
 )
 
 // Получение пользователя из БД по id
@@ -14,7 +13,6 @@ func (db *DB) GetUser(id string) (*models.Users, error) {
 		&user.FirstName,
 		&user.LastName,
 		&user.MiddleName); err != nil {
-		log.Print(err)
 		return nil, err
 	}
 	return user, nil
@@ -31,7 +29,6 @@ func (db *DB) SaveUser(user *models.Users) error {
 		user.FirstName,
 		user.LastName,
 		user.MiddleName); err != nil {
-		log.Fatal(err)
 		return err
 	}
 	return nil
