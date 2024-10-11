@@ -140,28 +140,17 @@ func (db *DB) DeleteDatabase() error {
 }
 
 // Начать транзакцию
-func (db *DB) StartTransaction() error {
-	if _, err := db.conn.Exec(izolationTransaction); err != nil {
-		return err
-	}
-	if _, err := db.conn.Exec(startTransaction); err != nil {
-		return err
-	}
-	return nil
+func (db *DB) StartTransaction() {
+	db.conn.Exec(izolationTransaction)
+	db.conn.Exec(startTransaction)
 }
 
 // Завершить транзакцию записав изменения
-func (db *DB) CommitTransaction() error {
-	if _, err := db.conn.Exec(commitTransaction); err != nil {
-		return err
-	}
-	return nil
+func (db *DB) CommitTransaction() {
+	db.conn.Exec(commitTransaction)
 }
 
 // Завершить транзакцию откатив изменения
-func (db *DB) RollBackTransaction() error {
-	if _, err := db.conn.Exec(rollbackTransaction); err != nil {
-		return err
-	}
-	return nil
+func (db *DB) RollBackTransaction() {
+	db.conn.Exec(rollbackTransaction)
 }
