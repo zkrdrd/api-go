@@ -51,25 +51,26 @@ func (db *DB) CountInternalTransactions() (int, error) {
 }
 
 // Получение транзакции по id
-func (db *DB) GetInternalTrasaction(id int) (*models.InternalTranser, error) {
-	transf := &models.InternalTranser{}
+func (db *DB) GetInternalTrasaction(id string) (*models.Transactions, error) {
+	transf := &models.Transactions{}
 	if err := db.conn.QueryRow(`
-	SELECT account_sender, account_recipient, amount, created_at 
+	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions WHERE id = $1;`, id).Scan(
 		&transf.AccountSender,
 		&transf.AccountRecipient,
 		&transf.Amount,
-		&transf.CreatedAt); err != nil {
+		&transf.CreatedAt,
+		&transf.TransactionType); err != nil {
 		return nil, err
 	}
 	return transf, nil
 }
 
 // Получение всех транзакций из БД в slice
-func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTranser, error) {
-	transfSlice := []*models.InternalTranser{}
+func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, error) {
+	transfSlice := []*models.Transactions{}
 	rows, err := db.conn.Query(`
-	SELECT account_sender, account_recipient, amount, created_at 
+	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
 		filt.order_by_collumn,
 		filt.order_by_asc_desc,
@@ -82,8 +83,8 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.InternalTranser, 
 	defer rows.Close()
 
 	for rows.Next() {
-		transf := &models.InternalTranser{}
-		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount, &transf.CreatedAt); err != nil {
+		transf := &models.Transactions{}
+		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount, &transf.CreatedAt, &transf.TransactionType); err != nil {
 			return nil, err
 		}
 		transfSlice = append(transfSlice, transf)

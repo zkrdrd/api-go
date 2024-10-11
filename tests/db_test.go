@@ -2,10 +2,8 @@ package tests
 
 import (
 	"api-go/cmd/app"
-	"api-go/internal/business"
 	"api-go/internal/postgredb"
 	"api-go/pkg/models"
-	"context"
 	"fmt"
 	"testing"
 )
@@ -23,14 +21,14 @@ func TestDB(t *testing.T) {
 
 	accountBalances(t, db)
 
-	//internalTransactions(t, db)
+	internalTransactions(t, db)
 
 }
 
 // test db customers
 func customer(t *testing.T, db *postgredb.DB) {
 
-	for _, message := range TestValueCustomer {
+	for _, message := range TestCustomer {
 		if err := db.SaveUser(message.MsgCustomers); err != nil {
 			t.Error(fmt.Errorf(`error "SaveUser" %v`, err))
 		}
@@ -40,110 +38,134 @@ func customer(t *testing.T, db *postgredb.DB) {
 	if err != nil {
 		t.Error(fmt.Errorf(`error "GetUser" %v`, err))
 	}
-	if TestValueCustomer[0].MsgCustomers.FirstName != res.FirstName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.FirstName, res.FirstName))
+	if TestCustomer[0].MsgCustomers.FirstName != res.FirstName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestCustomer[0].MsgCustomers.FirstName, res.FirstName))
 	}
-	if TestValueCustomer[0].MsgCustomers.LastName != res.LastName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.LastName, res.LastName))
+	if TestCustomer[0].MsgCustomers.LastName != res.LastName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestCustomer[0].MsgCustomers.LastName, res.LastName))
 	}
-	if TestValueCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
-	if TestValueCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
-		t.Error(fmt.Errorf(`result field %v != %v`, TestValueCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
+	if TestCustomer[0].MsgCustomers.MiddleName != res.MiddleName {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestCustomer[0].MsgCustomers.MiddleName, res.MiddleName))
 	}
 }
 
 // test db account_balance
 func accountBalances(t *testing.T, db *postgredb.DB) {
 
-	for _, message := range TestValueAccountBalances {
+	for _, message := range TestAccountBalance {
 		if err := db.SaveAccountBalance(message.MsgAccountBalance); err != nil {
 			t.Error(fmt.Errorf(`error "SaveAccountBalance" %v`, err))
 		}
 	}
 
-	a := &business.Accouting{
-		DB: db,
+	resData, err := db.GetAccountBalance("1")
+	if err != nil {
+		t.Error(fmt.Errorf(`error "GetAccountBalance" %v`, err))
 	}
 
-	for _, message := range TestValueCasheIn {
-		if err := a.CashIn(context.Background(), message.MsgValueCashIn); err != nil {
-			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
+	if TestAccountBalance[0].MsgAccountBalance.Account != resData.Account {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestAccountBalance[0].MsgAccountBalance.Account, resData.Account))
+	}
+	if TestAccountBalance[0].MsgAccountBalance.Amount != resData.Amount {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestAccountBalance[0].MsgAccountBalance.Amount, resData.Amount))
+	}
+	if TestAccountBalance[0].MsgAccountBalance.CreatedAt != resData.CreatedAt {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestAccountBalance[0].MsgAccountBalance.CreatedAt, resData.CreatedAt))
+	}
+
+	err = db.UpdateAccountBalance(TestUpdateAccountBalance)
+	if err != nil {
+		t.Error(fmt.Errorf(`error "UpdateAccountBalance" %v`, err))
+	}
+
+	resDataUpdate, err := db.GetAccountBalance("1")
+	if err != nil {
+		t.Error(fmt.Errorf(`error "GetAccountBalance" %v`, err))
+	}
+
+	if TestUpdateAccountBalance.Account != resDataUpdate.Account {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestUpdateAccountBalance.Account, resDataUpdate.Account))
+	}
+	if TestUpdateAccountBalance.Amount != resDataUpdate.Amount {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestUpdateAccountBalance.Amount, resDataUpdate.Amount))
+	}
+	if TestUpdateAccountBalance.CreatedAt != resDataUpdate.CreatedAt {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestUpdateAccountBalance.CreatedAt, resDataUpdate.CreatedAt))
+	}
+
+}
+
+// test db InternalTransactions
+func internalTransactions(t *testing.T, db *postgredb.DB) {
+
+	for _, message := range TestTransactions {
+
+		if err := db.SaveInternalTransaction(message.MsgTransaction); err != nil {
+			t.Error(fmt.Errorf(`error %v`, err))
 		}
 	}
 
-	for _, message := range TestValueInternalTransactions {
-		if err := a.InternalTransfer(context.Background(), message.MsgInternalTransaction); err != nil {
-			t.Error(fmt.Errorf(`error "InternalTransfer" %v`, err))
+	count, err := db.CountInternalTransactions()
+	if err != nil {
+		t.Error(fmt.Errorf(`error "CountInternalTransactions" %v`, err))
+	}
+
+	if countRes != count {
+		t.Error(fmt.Errorf(`result field %v != %v`, countRes, count))
+	}
+
+	filterInternalTransactions := postgredb.FilterInternalTransaction("amount", "DESC", count, 0)
+
+	res, err := db.GetInternalTrasaction("1")
+	if err != nil {
+		t.Error(fmt.Errorf(`error "GetInternalTrasaction" %v`, err))
+	}
+
+	if TestTransactions[0].MsgTransaction.AccountSender != res.AccountSender {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[0].MsgTransaction.AccountSender, res.AccountSender))
+	}
+	if TestTransactions[0].MsgTransaction.AccountRecipient != res.AccountRecipient {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[0].MsgTransaction.AccountRecipient, res.AccountRecipient))
+	}
+	if TestTransactions[0].MsgTransaction.Amount != res.Amount {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[0].MsgTransaction.Amount, res.Amount))
+	}
+	if TestTransactions[0].MsgTransaction.CreatedAt != res.CreatedAt {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[0].MsgTransaction.CreatedAt, res.CreatedAt))
+	}
+	if TestTransactions[0].MsgTransaction.TransactionType != res.TransactionType {
+		t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[0].MsgTransaction.TransactionType, res.TransactionType))
+	}
+
+	resData, err := db.ListInternalTransaction(filterInternalTransactions)
+	if err != nil {
+		t.Error(fmt.Errorf(`error "ListInternalTransaction" %v`, err))
+	}
+
+	for key, value := range resData {
+		if TestTransactions[key].MsgTransaction.AccountSender != value.AccountSender {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[key].MsgTransaction.AccountSender, value.AccountSender))
+		}
+		if TestTransactions[key].MsgTransaction.AccountRecipient != value.AccountRecipient {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[key].MsgTransaction.AccountRecipient, value.AccountRecipient))
+		}
+		if TestTransactions[key].MsgTransaction.Amount != value.Amount {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[key].MsgTransaction.Amount, value.Amount))
+		}
+		if TestTransactions[key].MsgTransaction.CreatedAt != value.CreatedAt {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[key].MsgTransaction.CreatedAt, value.CreatedAt))
+		}
+		if TestTransactions[key].MsgTransaction.TransactionType != value.TransactionType {
+			t.Error(fmt.Errorf(`result field %v != %v`, TestTransactions[key].MsgTransaction.TransactionType, value.TransactionType))
 		}
 	}
 }
 
-/*
-// test db InternalTransactions
-
-	func internalTransactions(t *testing.T, db *postgredb.DB) {
-
-
-		for _, message := range TestValueInternalTransaction {
-			if err := db.SaveInternalTransaction(message.MsgInternalTransaction); err != nil {
-				t.Error(fmt.Errorf(`error %v`, err))
-			}
-		}
-
-		count, err := db.CountInternalTransactions()
-		if err != nil {
-			t.Error(fmt.Errorf(`error "CountInternalTransactions" %v`, err))
-		}
-
-		if countRes != count {
-			t.Error(fmt.Errorf(`result field %v != %v`, countRes, count))
-		}
-
-		filterInternalTransactions := postgredb.FilterInternalTransaction("amount", "DESC", count, 0)
-
-		res, err := db.GetInternalTrasaction(1)
-		if err != nil {
-			t.Error(fmt.Errorf(`error "GetInternalTrasaction" %v`, err))
-		}
-
-		if TestValueInternalTransaction[0].MsgInternalTransaction.AccountSender != res.AccountSender {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.AccountSender, res.AccountSender))
-		}
-		if TestValueInternalTransaction[0].MsgInternalTransaction.AccountRecipient != res.AccountRecipient {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.AccountRecipient, res.AccountRecipient))
-		}
-		if TestValueInternalTransaction[0].MsgInternalTransaction.Amount != res.Amount {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.Amount, res.Amount))
-		}
-		if TestValueInternalTransaction[0].MsgInternalTransaction.CreatedAt != res.CreatedAt {
-			t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[0].MsgInternalTransaction.CreatedAt, res.CreatedAt))
-		}
-
-		resData, err := db.ListInternalTransaction(filterInternalTransactions)
-		if err != nil {
-			t.Error(fmt.Errorf(`error "ListInternalTransaction" %v`, err))
-		}
-
-		for key, value := range resData {
-			if TestValueInternalTransaction[key].MsgInternalTransaction.AccountSender != value.AccountSender {
-				t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.AccountSender, value.AccountSender))
-			}
-			if TestValueInternalTransaction[key].MsgInternalTransaction.AccountRecipient != value.AccountRecipient {
-				t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.AccountRecipient, value.AccountRecipient))
-			}
-			if TestValueInternalTransaction[key].MsgInternalTransaction.Amount != value.Amount {
-				t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.Amount, value.Amount))
-			}
-			if TestValueInternalTransaction[key].MsgInternalTransaction.CreatedAt != value.CreatedAt {
-				t.Error(fmt.Errorf(`result field %v != %v`, TestValueInternalTransaction[key].MsgInternalTransaction.CreatedAt, value.CreatedAt))
-			}
-		}
-	}
-*/
 var (
-	TestValueCustomer = []struct {
+	TestCustomer = []struct {
 		MsgCustomers *models.Users
 	}{
 		{
@@ -183,7 +205,7 @@ var (
 		},
 	}
 
-	TestValueAccountBalances = []struct {
+	TestAccountBalance = []struct {
 		MsgAccountBalance *models.Balance
 	}{
 		{
@@ -263,49 +285,60 @@ var (
 		},
 	}
 
-	TestValueInternalTransactions = []struct {
-		MsgInternalTransaction *models.InternalTranser
+	TestTransactions = []struct {
+		MsgTransaction *models.Transactions
 	}{
 		{
-			MsgInternalTransaction: &models.InternalTranser{
+			MsgTransaction: &models.Transactions{
 				AccountSender:    `1`,
 				AccountRecipient: `2`,
 				Amount:           `500000`,
 				CreatedAt:        `2024-10-06T15:34:43+05:00`,
+				TransactionType:  "Transfer",
 			},
 		},
 		{
-			MsgInternalTransaction: &models.InternalTranser{
+			MsgTransaction: &models.Transactions{
 				AccountSender:    `2`,
 				AccountRecipient: `3`,
 				Amount:           `50000`,
 				CreatedAt:        `2024-10-06T15:35:43+05:00`,
+				TransactionType:  "Transfer",
 			},
 		},
 		{
-			MsgInternalTransaction: &models.InternalTranser{
+			MsgTransaction: &models.Transactions{
 				AccountSender:    `3`,
 				AccountRecipient: `4`,
 				Amount:           `5000`,
 				CreatedAt:        `2024-10-06T15:36:43+05:00`,
+				TransactionType:  "Transfer",
 			},
 		},
 		{
-			MsgInternalTransaction: &models.InternalTranser{
+			MsgTransaction: &models.Transactions{
 				AccountSender:    `4`,
 				AccountRecipient: `5`,
 				Amount:           `500`,
 				CreatedAt:        `2024-10-06T15:37:43+05:00`,
+				TransactionType:  "Transfer",
 			},
 		},
 		{
-			MsgInternalTransaction: &models.InternalTranser{
+			MsgTransaction: &models.Transactions{
 				AccountSender:    `5`,
 				AccountRecipient: `1`,
 				Amount:           `50`,
 				CreatedAt:        `2024-10-06T15:38:43+05:00`,
+				TransactionType:  "Transfer",
 			},
 		},
 	}
-	//countRes = 5
+	countRes                 = 5
+	TestUpdateAccountBalance = &models.Balance{
+		Account:   "1",
+		Amount:    "1",
+		CreatedAt: "2024-10-04T15:34:43+05:00",
+		UpdatedAt: "2024-10-05T15:34:43+05:00",
+	}
 )

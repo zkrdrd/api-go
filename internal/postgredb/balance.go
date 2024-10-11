@@ -8,9 +8,10 @@ import (
 func (db *DB) GetAccountBalance(id string) (*models.Balance, error) {
 	balance := &models.Balance{}
 	if err := db.conn.QueryRow(`
-	SELECT account, amount	FROM account_balance WHERE id = $1;`, id).Scan(
+	SELECT account, amount, created_at	FROM account_balance WHERE id = $1;`, id).Scan(
 		&balance.Account,
-		&balance.Amount); err != nil {
+		&balance.Amount,
+		&balance.CreatedAt); err != nil {
 		return nil, err
 	}
 	return balance, nil
