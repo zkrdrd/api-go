@@ -1,4 +1,4 @@
-package postgredb
+package postgre
 
 import (
 	"database/sql"

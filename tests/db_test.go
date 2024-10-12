@@ -2,7 +2,7 @@ package tests
 
 import (
 	"api-go/cmd/app"
-	"api-go/internal/postgredb"
+	"api-go/internal/postgre"
 	"api-go/pkg/models"
 	"fmt"
 	"log"
@@ -10,7 +10,6 @@ import (
 )
 
 func TestDB(t *testing.T) {
-
 	dbconf, _ := app.ParseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
 	db.RecreateTableInternalTransactions()
@@ -28,7 +27,7 @@ func TestDB(t *testing.T) {
 		t.Error(fmt.Errorf(`result field %v != %v`, countRes, count))
 	}
 
-	filterInternalTransactions := postgredb.FilterInternalTransaction("amount", "DESC", count, 0)
+	filterInternalTransactions := postgre.FilterInternalTransaction("amount", "DESC", count, 0)
 
 	res, err := db.GetInternalTrasaction(1)
 	if err != nil {
