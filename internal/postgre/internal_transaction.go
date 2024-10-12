@@ -43,17 +43,18 @@ func FilterInternalTransaction(column, ask_desc string, limit, offset int) *filt
 // Получение количества строк в таблице
 func (db *DB) CountInternalTransactions() (int, error) {
 	var count int
-	if err := db.conn.QueryRow(`SELECT COUNT(*) FROM internal_transactions;`).Scan(&count); err != nil {
+	if err := db.useConn().QueryRow(`SELECT COUNT(*) FROM internal_transactions;`).Scan(&count); err != nil {
 		log.Print(err)
 		return 0, err
 	}
+
 	return count, nil
 }
 
 // Получение транзакции по id
 func (db *DB) GetInternalTrasaction(id string) (*models.Transactions, error) {
 	transf := &models.Transactions{}
-	if err := db.conn.QueryRow(`
+	if err := db.useConn().QueryRow(`
 	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions WHERE id = $1;`, id).Scan(
 		&transf.AccountSender,
@@ -69,7 +70,7 @@ func (db *DB) GetInternalTrasaction(id string) (*models.Transactions, error) {
 // Получение всех транзакций из БД в slice
 func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, error) {
 	transfSlice := []*models.Transactions{}
-	rows, err := db.conn.Query(`
+	rows, err := db.useConn().Query(`
 	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
 		filt.order_by_collumn,
@@ -94,7 +95,7 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, err
 
 // Запись транзакций в БД
 func (db *DB) SaveInternalTransaction(transf *models.Transactions) error {
-	if _, err := db.conn.Exec(`
+	if _, err := db.useConn().Exec(`
 	INSERT INTO internal_transactions (account_sender, account_recipient, amount, created_at, transaction_type) 
 	VALUES (
 	$1, --AccountSender

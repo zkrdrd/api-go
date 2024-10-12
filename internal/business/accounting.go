@@ -1,6 +1,7 @@
 package business
 
 import (
+	"api-go/internal/locker"
 	"api-go/internal/postgre"
 	"api-go/pkg/models"
 	"context"
@@ -12,11 +13,13 @@ import (
 )
 
 type Accouting struct {
-	db *postgre.DB
+	db   *postgre.DB
+	lock *locker.Locker
 }
 
 var (
-	ErrMoneyNotEnough = errors.New(`error money not enough`)
+	ErrMoneyNotEnough   = errors.New(`money not enough`)
+	ErrAccoutingIsEmpty = errors.New(`account is empty`)
 )
 
 // return time as string format RFC3339 "2006-01-02T15:04:05Z07:00"
@@ -24,11 +27,33 @@ func dateTime() string {
 	return time.Now().Format(time.RFC3339)
 }
 
+func NewAccounting(db *postgre.DB, lock *locker.Locker) *Accouting {
+	return &Accouting{
+		db:   db,
+		lock: lock,
+	}
+}
+
 // TODO:
 // 1. Блокирую баланс
 // 2. Разблокирую баланс
 // Пополняю счет наличными
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
+	if cacheOut.Account == `` {
+		return ErrAccoutingIsEmpty
+	}
+
+	// блокируем возможность конкурентно
+	a.lock.Lock(cacheOut.Account)
+	defer a.lock.Unlock(cacheOut.Account)
+
+	// проверяем что подключение есть
+	select {
+	default:
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+
 	accountSender, err := a.db.GetAccountBalance(cacheOut.Account)
 	if err != nil {
 		return err
@@ -52,18 +77,23 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 		TransactionType:  "Cash out",
 	}
 
-	err = a.db.AsTx(ctx, func(s postgre.Storage) error {
-		if err := a.db.UpdateAccountBalance(accountSender); err != nil {
-			return err
-		}
-		if err := a.db.SaveInternalTransaction(transaction); err != nil {
-			return err
-		}
+	// все происходит в транзакции
+	err = a.db.AsTx(ctx,
+		func(tx postgre.Storage) error {
 
-		return nil
-	})
+			if err := tx.UpdateAccountBalance(accountSender); err != nil {
+				return err
+			}
 
-	return err
+			if err := tx.SaveInternalTransaction(transaction); err != nil {
+				return err
+			}
+
+			return nil
+		},
+	)
+
+	return fmt.Errorf(`cashout %w`, err)
 }
 
 // Тут я снимаю со счета начличные

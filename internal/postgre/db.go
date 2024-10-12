@@ -151,6 +151,7 @@ func (db *DB) Rollback() error {
 	return nil
 }
 
+// DB(original) -> DB(*Tx)
 func (db *DB) AsTx(ctx context.Context, fn func(Storage) error) error {
 	if db.isTx {
 		return fn(db)
