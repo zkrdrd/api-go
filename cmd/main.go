@@ -8,7 +8,7 @@ import (
 func main() {
 
 	dbconf, _ := app.ParseDBConfig("ConConf.json")
-	db, _ := dbconf.NewDB()
+	db, _ := postgre.NewDB(dbconf)
 	//db.SaveUser(usr)
 
 	// res, _ := db.GetUser("1")

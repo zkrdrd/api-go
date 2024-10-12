@@ -2,6 +2,7 @@ package tests
 
 import (
 	"api-go/cmd/app"
+	"api-go/internal/postgre"
 	postgredb "api-go/internal/postgre"
 	"api-go/pkg/models"
 	"fmt"
@@ -10,7 +11,7 @@ import (
 
 func TestDB(t *testing.T) {
 	dbconf, _ := app.ParseDBConfig("ConConf.json")
-	db, _ := dbconf.NewDB()
+	db, _ := postgre.NewDB(dbconf)
 
 	db.RecreateTableCustomers()
 	db.RecreateTableAccountBalance()

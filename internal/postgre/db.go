@@ -1,7 +1,10 @@
 package postgre
 
 import (
+	"api-go/pkg/models"
+	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 
@@ -17,8 +20,41 @@ type DBConfig struct {
 	SSLmode  string `json:"sslmode,omitempty"`
 }
 
+type Connecter interface {
+	Exec(query string, args ...any) (sql.Result, error)
+	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+	Prepare(query string) (*sql.Stmt, error)
+	PrepareContext(ctx context.Context, query string) (*sql.Stmt, error)
+	Query(query string, args ...any) (*sql.Rows, error)
+	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+	QueryRow(query string, args ...any) *sql.Row
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}
+
+type Storage interface {
+	AsTx(ctx context.Context, fn func(Storage) error) error
+	CountInternalTransactions() (int, error)
+	CreateDB() error
+	DeleteDatabase() error
+	GetAccountBalance(id string) (*models.Balance, error)
+	GetInternalTrasaction(id string) (*models.Transactions, error)
+	GetUser(id string) (*models.Users, error)
+	ListInternalTransaction(filt *filter) ([]*models.Transactions, error)
+	RecreateTableAccountBalance() error
+	RecreateTableCustomers() error
+	RecreateTableInternalTransactions() error
+	Rollback() error
+	SaveAccountBalance(balance *models.Balance) error
+	SaveInternalTransaction(transf *models.Transactions) error
+	SaveUser(user *models.Users) error
+	UpdateAccountBalance(balance *models.Balance) error
+}
+
 type DB struct {
-	conn *sql.DB
+	conn   *sql.DB
+	connTx *sql.Tx
+
+	isTx bool
 }
 
 const (
@@ -52,15 +88,10 @@ const (
 	dropTableInternalTransactions = `DROP TABLE internal_transactions;`
 	dropTableAccountBalance       = `DROP TABLE account_balance;`
 	dropDB                        = `DROP DATABASE api;`
-
-	izolationTransaction = `SET TRANSACTION SERIALIZABLE;`
-	startTransaction     = `BEGIN;`
-	commitTransaction    = `COMMIT;`
-	rollbackTransaction  = `ROLLBACK;`
 )
 
 // Инициализация соединения с БД
-func (dbconf *DBConfig) NewDB() (*DB, error) {
+func NewDB(dbconf *DBConfig) (*DB, error) {
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(`host=%v 
 	port=%v 
@@ -80,6 +111,74 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 	}
 
 	return &DB{conn: db}, nil
+}
+
+// принадлежит к DB потому что вызывается от конкретного объекта
+func (db *DB) NewDBTx(conn *sql.Tx) *DB {
+	// если объект уже транзакция, то возвращаем её же (без вложенных транзакций)
+	if db.isTx {
+		return db
+	}
+
+	// если объект не является транзакцией, то создаем новый
+	return &DB{connTx: conn, isTx: true}
+}
+
+func (db *DB) useConn() Connecter {
+	if db.isTx {
+		return db.connTx
+	}
+	return db.conn
+}
+
+func (db *DB) Commit() error {
+	if !db.isTx {
+		return nil
+	}
+
+	return db.connTx.Commit()
+}
+
+func (db *DB) Rollback() error {
+	if !db.isTx {
+		return nil
+	}
+
+	if err := db.connTx.Rollback(); err != nil && !errors.Is(err, sql.ErrTxDone) {
+		return err
+	}
+
+	return nil
+}
+
+func (db *DB) AsTx(ctx context.Context, fn func(Storage) error) error {
+	if db.isTx {
+		return fn(db)
+	}
+
+	conn, err := db.conn.BeginTx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelReadCommitted,
+	})
+	if err != nil {
+		return fmt.Errorf(`as tx begin: %w`, err)
+	}
+
+	txDB := db.NewDBTx(conn)
+
+	// Если rollback вызывается после commit, то такой случай обрабатывается
+	if err := fn(txDB); err != nil {
+		err = fmt.Errorf(`as tx fn %w`, err)
+
+		// Врапим ошибку если такая есть при rollback
+		rollbackErr := txDB.Rollback()
+		if rollbackErr != nil {
+			err = fmt.Errorf(`rollback: %w`, rollbackErr)
+		}
+
+		return err
+	}
+
+	return txDB.Commit()
 }
 
 func (db *DB) CreateDB() error {
@@ -137,20 +236,4 @@ func (db *DB) DeleteDatabase() error {
 		return err
 	}
 	return nil
-}
-
-// Начать транзакцию
-func (db *DB) StartTransaction() {
-	db.conn.Exec(izolationTransaction)
-	db.conn.Exec(startTransaction)
-}
-
-// Завершить транзакцию записав изменения
-func (db *DB) CommitTransaction() {
-	db.conn.Exec(commitTransaction)
-}
-
-// Завершить транзакцию откатив изменения
-func (db *DB) RollBackTransaction() {
-	db.conn.Exec(rollbackTransaction)
 }

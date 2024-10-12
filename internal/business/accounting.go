@@ -12,7 +12,7 @@ import (
 )
 
 type Accouting struct {
-	DB *postgre.DB
+	db *postgre.DB
 }
 
 var (
@@ -24,19 +24,13 @@ func dateTime() string {
 	return time.Now().Format(time.RFC3339)
 }
 
-// Тут я пополняю счет наличными
+// TODO:
+// 1. Блокирую баланс
+// 2. Разблокирую баланс
+// Пополняю счет наличными
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
-
-	a.DB.StartTransaction()
-	// TODO:
-	// 1. Блокирую баланс
-	// 2. Разблокирую баланс
-
-	// Обналичиваю средства
-	// Изменяю сумму баланса
-	accountSender, err := a.DB.GetAccountBalance(cacheOut.Account)
+	accountSender, err := a.db.GetAccountBalance(cacheOut.Account)
 	if err != nil {
-		a.DB.RollBackTransaction()
 		return err
 	}
 
@@ -44,17 +38,11 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
 
 	if amount > senderBalance {
-		a.DB.RollBackTransaction()
 		return ErrMoneyNotEnough
 	}
 
 	accountSender.Amount = fmt.Sprintf("%.2f", senderBalance-amount)
 	accountSender.UpdatedAt = dateTime()
-
-	if err := a.DB.UpdateAccountBalance(accountSender); err != nil {
-		a.DB.RollBackTransaction()
-		return err
-	}
 
 	transaction := &models.Transactions{
 		AccountSender:    accountSender.Account,
@@ -64,13 +52,18 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 		TransactionType:  "Cash out",
 	}
 
-	if err := a.DB.SaveInternalTransaction(transaction); err != nil {
-		a.DB.RollBackTransaction()
-		return err
-	}
+	err = a.db.AsTx(ctx, func(s postgre.Storage) error {
+		if err := a.db.UpdateAccountBalance(accountSender); err != nil {
+			return err
+		}
+		if err := a.db.SaveInternalTransaction(transaction); err != nil {
+			return err
+		}
 
-	a.DB.CommitTransaction()
-	return nil
+		return nil
+	})
+
+	return err
 }
 
 // Тут я снимаю со счета начличные
