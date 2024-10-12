@@ -1,7 +1,7 @@
 package business
 
 import (
-	"api-go/internal/postgredb"
+	"api-go/internal/postgre"
 	"api-go/pkg/models"
 	"context"
 	"errors"
@@ -11,13 +11,8 @@ import (
 	"time"
 )
 
-// Я знаю как делать операции с счетами пользователя
 type Accouting struct {
-	DB *postgredb.DB
-	// Во мне лежит все  необходимое для работы
-	// к примеру подключение к БД, а возможно и подключения
-	// к другим сервисам
-	//db *db.Conn
+	DB *postgre.DB
 }
 
 var (

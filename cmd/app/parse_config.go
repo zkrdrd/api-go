@@ -1,15 +1,15 @@
 package app
 
 import (
-	"api-go/internal/postgredb"
+	"api-go/internal/postgre"
 	"errors"
 	"log"
 
 	"github.com/zkrdrd/ConfigParser"
 )
 
-func ParseDBConfig(confPath string) (*postgredb.DBConfig, error) {
-	var cfg = &postgredb.DBConfig{}
+func ParseDBConfig(confPath string) (*postgre.DBConfig, error) {
+	var cfg = &postgre.DBConfig{}
 	if err := ConfigParser.Read(confPath, cfg); err != nil {
 		log.Fatal(err)
 		return nil, err

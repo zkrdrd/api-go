@@ -2,7 +2,7 @@ package main
 
 import (
 	"api-go/cmd/app"
-	"api-go/internal/postgredb"
+	"api-go/internal/postgre"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
-	filter := postgredb.FilterInternalTransaction("", "", 0, 0)
+	filter := postgre.FilterInternalTransaction("", "", 0, 0)
 
 	_, _ = db.ListInternalTransaction(filter)
 }
