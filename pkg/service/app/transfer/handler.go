@@ -5,11 +5,12 @@ import (
 )
 
 // Mux Creator
-func (b *Transaction) Handlers() http.Handler {
+func (a *Transfer) Handlers() http.Handler {
 	mux := http.NewServeMux()
 
-	// mux.HandleFunc(`/transaction/CacheIn`, service.CallLogic(b.CacheIn))
-	// mux.HandleFunc(`/transaction/Transfer`, service.CallLogic(b.Transfer))
+	// mux.HandleFunc(`/transaction/CacheIn`, service.CallLogic(a.CashIn))
+	// mux.HandleFunc(`/transaction/CacheIn`, service.CallLogic(a.CashOut))
+	// mux.HandleFunc(`/transaction/Transfer`, service.CallLogic(a.InternalTransfer))
 
 	return mux
 }

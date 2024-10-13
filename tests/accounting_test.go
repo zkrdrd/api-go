@@ -2,7 +2,6 @@ package tests
 
 import (
 	"api-go/pkg/server"
-	"api-go/pkg/service/app/transfer"
 	"bytes"
 	"context"
 	"io"
@@ -21,13 +20,13 @@ func TestAccounting(t *testing.T) {
 
 	ctx := context.Background()
 	//usersService := users.NewUsers()
-	transactionAddService := transfer.NewBalance()
+	//transactionAddService := transfer.NewBalance()
 
 	//handler := usersService.Handlers(mux)
 
 	server := server.NewServer(addressServer)
 	//server.AddHandler(usersService.Handlers())
-	server.AddHandler(transactionAddService.Handlers())
+	//server.AddHandler(transactionAddService.Handlers())
 	server.Run(ctx)
 
 	time.Sleep(time.Second * 1)

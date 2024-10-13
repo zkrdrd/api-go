@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -54,19 +53,25 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	default:
 	}
 
+	cashOutToBalance := &models.Balance{
+		Account: cacheOut.Account,
+		Amount:  cacheOut.Amount,
+	}
+
 	accountSender, err := a.db.GetAccountBalance(cacheOut.Account)
 	if err != nil {
 		return err
 	}
 
-	amount, _ := strconv.ParseFloat(cacheOut.Amount, 32)
-	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
+	amount := cashOutToBalance.GetBalance()
+	senderBalance := accountSender.GetBalance()
 
-	if amount > senderBalance {
+	if res := amount.Cmp(senderBalance); res == +1 {
 		return ErrMoneyNotEnough
 	}
 
-	accountSender.Amount = fmt.Sprintf("%.2f", senderBalance-amount)
+	// accountSender.Amount
+	_ = accountSender.SetBalance(senderBalance.Sub(senderBalance, amount))
 	accountSender.UpdatedAt = dateTime()
 
 	transaction := &models.Transactions{
@@ -107,15 +112,21 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	default:
 	}
 
+	cashInToBalance := &models.Balance{
+		Account: cacheIn.Account,
+		Amount:  cacheIn.Amount,
+	}
+
 	accountRecipient, err := a.db.GetAccountBalance(cacheIn.Account)
 	if err != nil {
 		return err
 	}
 
-	amount, _ := strconv.ParseFloat(cacheIn.Amount, 32)
-	recipientBalance, _ := strconv.ParseFloat(accountRecipient.Amount, 32)
+	amount := cashInToBalance.GetBalance()
+	recipientBalance := accountRecipient.GetBalance()
 
-	accountRecipient.Amount = fmt.Sprintf("%.2f", recipientBalance+amount)
+	// accountSender.Amount
+	_ = accountRecipient.SetBalance(recipientBalance.Add(recipientBalance, amount))
 	accountRecipient.UpdatedAt = dateTime()
 
 	transaction := &models.Transactions{
@@ -166,25 +177,38 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 		return err
 	}
 
-	//big.NewInt(0)
-	amount, _ := strconv.ParseFloat(transfer.Amount, 32)
-	senderBalance, _ := strconv.ParseFloat(accountSender.Amount, 32)
-
-	if amount > senderBalance {
-		return ErrMoneyNotEnough
-	}
-
-	accountSender.Amount = fmt.Sprintf("%.2f", senderBalance-amount)
-	accountSender.UpdatedAt = dateTime()
-
 	accountRecipient, err := a.db.GetAccountBalance(transfer.AccountRecipient)
 	if err != nil {
 		return err
 	}
 
-	recipientBalance, _ := strconv.ParseFloat(accountRecipient.Amount, 32)
+	accountSenderToBalance := &models.Balance{
+		Account: accountSender.Account,
+		Amount:  accountSender.Amount,
+	}
 
-	accountRecipient.Amount = fmt.Sprintf("%.2f", recipientBalance+amount)
+	accountRecipientToBalance := &models.Balance{
+		Account: accountRecipient.Account,
+		Amount:  accountRecipient.Amount,
+	}
+
+	transferToBalance := &models.Balance{
+		Amount: transfer.Amount,
+	}
+
+	amount := transferToBalance.GetBalance()
+	senderBalance := accountSenderToBalance.GetBalance()
+	recipientBalance := accountRecipientToBalance.GetBalance()
+
+	if res := amount.Cmp(senderBalance); res == +1 {
+		return ErrMoneyNotEnough
+	}
+
+	// accountSender.Amount
+	_ = accountSender.SetBalance(senderBalance.Sub(senderBalance, amount))
+	accountSender.UpdatedAt = dateTime()
+
+	_ = accountRecipient.SetBalance(recipientBalance.Add(recipientBalance, amount))
 	accountRecipient.UpdatedAt = dateTime()
 
 	transaction := &models.Transactions{

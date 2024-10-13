@@ -189,31 +189,31 @@ var (
 		{
 			MsgValueCashIn: &models.CashIn{
 				Account: `1`,
-				Amount:  `10.00`,
+				Amount:  `10000000`,
 			},
 		},
 		{
 			MsgValueCashIn: &models.CashIn{
 				Account: `2`,
-				Amount:  `10.00`,
+				Amount:  `10000000`,
 			},
 		},
 		{
 			MsgValueCashIn: &models.CashIn{
 				Account: `3`,
-				Amount:  `10.00`,
+				Amount:  `10000000`,
 			},
 		},
 		{
 			MsgValueCashIn: &models.CashIn{
 				Account: `4`,
-				Amount:  `10.00`,
+				Amount:  `10000000`,
 			},
 		},
 		{
 			MsgValueCashIn: &models.CashIn{
 				Account: `5`,
-				Amount:  `10.00`,
+				Amount:  `10000000`,
 			},
 		},
 	}
@@ -225,7 +225,7 @@ var (
 			MsgInternalTransaction: &models.InternalTranser{
 				AccountSender:    `1`,
 				AccountRecipient: `2`,
-				Amount:           `5.00`,
+				Amount:           `5000000`,
 				CreatedAt:        `2024-10-06T15:34:43+05:00`,
 			},
 		},
@@ -233,7 +233,7 @@ var (
 			MsgInternalTransaction: &models.InternalTranser{
 				AccountSender:    `2`,
 				AccountRecipient: `3`,
-				Amount:           `5.00`,
+				Amount:           `5000000`,
 				CreatedAt:        `2024-10-06T15:35:43+05:00`,
 			},
 		},
@@ -241,7 +241,7 @@ var (
 			MsgInternalTransaction: &models.InternalTranser{
 				AccountSender:    `3`,
 				AccountRecipient: `4`,
-				Amount:           `5.00`,
+				Amount:           `5000000`,
 				CreatedAt:        `2024-10-06T15:36:43+05:00`,
 			},
 		},
@@ -249,7 +249,7 @@ var (
 			MsgInternalTransaction: &models.InternalTranser{
 				AccountSender:    `4`,
 				AccountRecipient: `5`,
-				Amount:           `5.00`,
+				Amount:           `5000000`,
 				CreatedAt:        `2024-10-06T15:37:43+05:00`,
 			},
 		},
@@ -257,7 +257,7 @@ var (
 			MsgInternalTransaction: &models.InternalTranser{
 				AccountSender:    `5`,
 				AccountRecipient: `6`,
-				Amount:           `5.00`,
+				Amount:           `5000000`,
 				CreatedAt:        `2024-10-06T15:38:43+05:00`,
 			},
 		},
@@ -270,7 +270,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "1",
 				AccountRecipient: "1",
-				Amount:           "10.00",
+				Amount:           "10000000",
 				CreatedAt:        "",
 				TransactionType:  "Cash in",
 			},
@@ -279,7 +279,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "2",
 				AccountRecipient: "2",
-				Amount:           "10.00",
+				Amount:           "10000000",
 				CreatedAt:        "",
 				TransactionType:  "Cash in",
 			},
@@ -288,7 +288,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "3",
 				AccountRecipient: "3",
-				Amount:           "10.00",
+				Amount:           "10000000",
 				CreatedAt:        "",
 				TransactionType:  "Cash in",
 			},
@@ -297,7 +297,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "4",
 				AccountRecipient: "4",
-				Amount:           "10.00",
+				Amount:           "10000000",
 				CreatedAt:        "",
 				TransactionType:  "Cash in",
 			},
@@ -306,7 +306,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "5",
 				AccountRecipient: "5",
-				Amount:           "10.00",
+				Amount:           "10000000",
 				CreatedAt:        "",
 				TransactionType:  "Cash in",
 			},
@@ -315,7 +315,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "1",
 				AccountRecipient: "2",
-				Amount:           "5.00",
+				Amount:           "5000000",
 				CreatedAt:        "",
 				TransactionType:  "Transfer",
 			},
@@ -324,7 +324,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "2",
 				AccountRecipient: "3",
-				Amount:           "5.00",
+				Amount:           "5000000",
 				CreatedAt:        "",
 				TransactionType:  "Transfer",
 			},
@@ -333,7 +333,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "3",
 				AccountRecipient: "4",
-				Amount:           "5.00",
+				Amount:           "5000000",
 				CreatedAt:        "",
 				TransactionType:  "Transfer",
 			},
@@ -342,7 +342,7 @@ var (
 			MsgTransactions: &models.Transactions{
 				AccountSender:    "4",
 				AccountRecipient: "5",
-				Amount:           "5.00",
+				Amount:           "5000000",
 				CreatedAt:        "",
 				TransactionType:  "Transfer",
 			},
@@ -355,7 +355,7 @@ var (
 		{
 			MsgAccountBalance: &models.Balance{
 				Account:   "1",
-				Amount:    "5.00",
+				Amount:    "5000000",
 				CreatedAt: "2024-10-04T15:34:43+05:00",
 				UpdatedAt: "",
 			},
@@ -363,7 +363,7 @@ var (
 		{
 			MsgAccountBalance: &models.Balance{
 				Account:   "2",
-				Amount:    "10.00",
+				Amount:    "10000000",
 				CreatedAt: "2024-10-04T15:35:43+05:00",
 				UpdatedAt: "",
 			},
@@ -371,7 +371,7 @@ var (
 		{
 			MsgAccountBalance: &models.Balance{
 				Account:   "3",
-				Amount:    "10.00",
+				Amount:    "10000000",
 				CreatedAt: "2024-10-04T15:36:43+05:00",
 				UpdatedAt: "",
 			},
@@ -379,7 +379,7 @@ var (
 		{
 			MsgAccountBalance: &models.Balance{
 				Account:   "4",
-				Amount:    "10.00",
+				Amount:    "10000000",
 				CreatedAt: "2024-10-04T15:37:43+05:00",
 				UpdatedAt: "",
 			},
@@ -387,7 +387,7 @@ var (
 		{
 			MsgAccountBalance: &models.Balance{
 				Account:   "5",
-				Amount:    "15.00",
+				Amount:    "15000000",
 				CreatedAt: "2024-10-04T15:38:43+05:00",
 				UpdatedAt: "",
 			},

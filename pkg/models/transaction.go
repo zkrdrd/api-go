@@ -1,5 +1,10 @@
 package models
 
+import (
+	"fmt"
+	"math/big"
+)
+
 // я тип - я описываю пополнение наличными
 type CashIn struct {
 	Account string
@@ -12,11 +17,26 @@ type CashOut struct {
 	Amount  string
 }
 
+// 6 символов точности
 type Balance struct {
 	Account   string
 	Amount    string
 	CreatedAt string
 	UpdatedAt string
+}
+
+func (b *Balance) GetBalance() *big.Int {
+	amount := big.NewInt(0)
+	_, _ = amount.SetString(b.Amount, 10)
+	return amount
+}
+
+func (b *Balance) SetBalance(amount *big.Int) error {
+	if amount == nil {
+		return fmt.Errorf(`amount is nil`)
+	}
+	b.Amount = amount.String()
+	return nil
 }
 
 // Я тип - я описываю перевод с одного счета на другой
