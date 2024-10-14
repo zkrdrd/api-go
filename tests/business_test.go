@@ -2,9 +2,9 @@ package tests
 
 import (
 	"api-go/cmd/app"
-	"api-go/internal/business"
 	"api-go/internal/locker"
 	"api-go/internal/postgredb"
+	business "api-go/internal/services"
 	"api-go/pkg/models"
 	"context"
 	"fmt"

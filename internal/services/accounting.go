@@ -1,8 +1,8 @@
-package business
+package services
 
 import (
 	"api-go/internal/locker"
-	"api-go/internal/postgredb"
+	postgre "api-go/internal/postgredb"
 	"api-go/pkg/models"
 	"context"
 	"errors"
@@ -13,11 +13,7 @@ import (
 
 // Я знаю как делать операции с счетами пользователя
 type Accouting struct {
-	db *postgredb.DB
-	// Во мне лежит все  необходимое для работы
-	// к примеру подключение к БД, а возможно и подключения
-	// к другим сервисам
-	//db *db.Conn
+	db   *postgre.DB
 	lock *locker.Locker
 }
 
@@ -26,7 +22,7 @@ var (
 	ErrAccoutingIsEmpty = errors.New(`account is empty`)
 )
 
-func NewAccouting(dbConn *postgredb.DB, lock *locker.Locker) *Accouting {
+func NewAccouting(dbConn *postgre.DB, lock *locker.Locker) *Accouting {
 	return &Accouting{
 		db:   dbConn,
 		lock: lock,
@@ -39,13 +35,13 @@ func dateTime() string {
 }
 
 // Тут я пополняю счет наличными
-func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
-	if cacheOut.Account == `` {
+func (a *Accouting) CashOut(ctx context.Context, cashOut *models.CashOut) error {
+	if cashOut.Account == `` {
 		return ErrAccoutingIsEmpty
 	}
 
-	a.lock.Lock(cacheOut.Account)
-	defer a.lock.Unlock(cacheOut.Account)
+	a.lock.Lock(cashOut.Account)
+	defer a.lock.Unlock(cashOut.Account)
 
 	select {
 	case <-ctx.Done():
@@ -54,11 +50,11 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	}
 
 	cashOutToBalance := &models.Balance{
-		Account: cacheOut.Account,
-		Amount:  cacheOut.Amount,
+		Account: cashOut.Account,
+		Amount:  cashOut.Amount,
 	}
 
-	accountSender, err := a.db.GetAccountBalance(cacheOut.Account)
+	accountSender, err := a.db.GetAccountBalance(cashOut.Account)
 	if err != nil {
 		return err
 	}
@@ -83,7 +79,7 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	}
 
 	err = a.db.AsTx(ctx,
-		func(tx postgredb.Storage) error {
+		func(tx postgre.Storage) error {
 			if err := tx.UpdateAccountBalance(accountSender); err != nil {
 				return err
 			}
@@ -98,13 +94,13 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 }
 
 // Тут я снимаю со счета начличные
-func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
-	if cacheIn.Account == `` {
+func (a *Accouting) CashIn(ctx context.Context, cashIn *models.CashIn) error {
+	if cashIn.Account == `` {
 		return ErrAccoutingIsEmpty
 	}
 
-	a.lock.Lock(cacheIn.Account)
-	defer a.lock.Unlock(cacheIn.Account)
+	a.lock.Lock(cashIn.Account)
+	defer a.lock.Unlock(cashIn.Account)
 
 	select {
 	case <-ctx.Done():
@@ -113,11 +109,11 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	}
 
 	cashInToBalance := &models.Balance{
-		Account: cacheIn.Account,
-		Amount:  cacheIn.Amount,
+		Account: cashIn.Account,
+		Amount:  cashIn.Amount,
 	}
 
-	accountRecipient, err := a.db.GetAccountBalance(cacheIn.Account)
+	accountRecipient, err := a.db.GetAccountBalance(cashIn.Account)
 	if err != nil {
 		return err
 	}
@@ -138,7 +134,7 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	}
 
 	err = a.db.AsTx(ctx,
-		func(tx postgredb.Storage) error {
+		func(tx postgre.Storage) error {
 			if err := tx.UpdateAccountBalance(accountRecipient); err != nil {
 				return err
 			}
@@ -220,7 +216,7 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	}
 
 	err = a.db.AsTx(ctx,
-		func(s postgredb.Storage) error {
+		func(s postgre.Storage) error {
 			if err := a.db.UpdateAccountBalance(accountSender); err != nil {
 				return err
 			}
