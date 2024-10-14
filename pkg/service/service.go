@@ -44,7 +44,13 @@ const (
 	MsgInvalidBody = `invalid body`
 )
 
-func handlerAccouting[Type models.CashOut | models.CashIn | models.InternalTranser](method string, fn func(context.Context, *Type) error) func(w http.ResponseWriter, r *http.Request) {
+func handlerAccouting[
+	Type models.CashOut |
+		models.CashIn |
+		models.InternalTranser](
+	method string,
+	fn func(context.Context, *Type) error,
+) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		handlerData := new(Type)
 
