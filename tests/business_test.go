@@ -2,9 +2,9 @@ package tests
 
 import (
 	"api-go/cmd/app"
-	"api-go/internal/business"
 	"api-go/internal/locker"
 	"api-go/internal/postgredb"
+	"api-go/internal/services"
 	"api-go/pkg/models"
 	"context"
 	"fmt"
@@ -30,7 +30,7 @@ func TestBusines(t *testing.T) {
 		db.SaveAccountBalance(balance.MsgAccountBalance)
 	}
 
-	a := business.NewAccouting(db, locker.NewLocker())
+	a := services.NewAccouting(db, locker.NewLocker())
 
 	for _, cashIn := range ValueCasheIn {
 		a.CashIn(context.Background(), cashIn.MsgValueCashIn)
