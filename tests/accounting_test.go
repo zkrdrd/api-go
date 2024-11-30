@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"api-go/pkg/server"
 	"bytes"
 	"context"
 	"io"
@@ -9,6 +8,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/zkrdrd/api-go/pkg/server"
 )
 
 const (

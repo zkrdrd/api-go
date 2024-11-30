@@ -1,4 +1,4 @@
-module api-go
+module github.com/zkrdrd/api-go
 
 go 1.23
 

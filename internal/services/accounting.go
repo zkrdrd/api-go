@@ -1,14 +1,15 @@
 package services
 
 import (
-	"api-go/internal/locker"
-	"api-go/internal/postgredb"
-	"api-go/pkg/models"
 	"context"
 	"errors"
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/zkrdrd/api-go/internal/locker"
+	"github.com/zkrdrd/api-go/internal/postgredb"
+	"github.com/zkrdrd/api-go/pkg/models"
 )
 
 // Я знаю как делать операции с счетами пользователя

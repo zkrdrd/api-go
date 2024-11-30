@@ -1,12 +1,13 @@
 package postgredb
 
 import (
-	"api-go/pkg/models"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"log"
+
+	"github.com/zkrdrd/api-go/pkg/models"
 
 	_ "github.com/lib/pq"
 )

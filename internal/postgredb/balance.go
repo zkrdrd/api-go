@@ -1,7 +1,7 @@
 package postgredb
 
 import (
-	"api-go/pkg/models"
+	"github.com/zkrdrd/api-go/pkg/models"
 )
 
 // Получение пользователя из БД по id

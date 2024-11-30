@@ -1,11 +1,12 @@
 package tests
 
 import (
-	"api-go/cmd/app"
-	"api-go/internal/postgredb"
-	"api-go/pkg/models"
 	"fmt"
 	"testing"
+
+	"github.com/zkrdrd/api-go/cmd/app"
+	"github.com/zkrdrd/api-go/internal/postgredb"
+	"github.com/zkrdrd/api-go/pkg/models"
 )
 
 func TestDB(t *testing.T) {

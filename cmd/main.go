@@ -1,8 +1,8 @@
 package main
 
 import (
-	"api-go/cmd/app"
-	"api-go/internal/postgredb"
+	"github.com/zkrdrd/api-go/cmd/app"
+	"github.com/zkrdrd/api-go/internal/postgredb"
 )
 
 func main() {

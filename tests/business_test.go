@@ -1,14 +1,15 @@
 package tests
 
 import (
-	"api-go/cmd/app"
-	"api-go/internal/locker"
-	"api-go/internal/postgredb"
-	"api-go/internal/services"
-	"api-go/pkg/models"
 	"context"
 	"fmt"
 	"testing"
+
+	"github.com/zkrdrd/api-go/cmd/app"
+	"github.com/zkrdrd/api-go/internal/locker"
+	"github.com/zkrdrd/api-go/internal/postgredb"
+	"github.com/zkrdrd/api-go/internal/services"
+	"github.com/zkrdrd/api-go/pkg/models"
 )
 
 func TestBusines(t *testing.T) {

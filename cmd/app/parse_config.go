@@ -1,9 +1,10 @@
 package app
 
 import (
-	"api-go/internal/postgredb"
 	"errors"
 	"log"
+
+	"github.com/zkrdrd/api-go/internal/postgredb"
 
 	"github.com/zkrdrd/ConfigParser"
 )

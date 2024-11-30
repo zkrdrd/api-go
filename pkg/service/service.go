@@ -1,9 +1,10 @@
 package service
 
 import (
-	"api-go/internal/postgredb"
-	"api-go/internal/services"
 	"net/http"
+
+	"github.com/zkrdrd/api-go/internal/postgredb"
+	"github.com/zkrdrd/api-go/internal/services"
 )
 
 func Handlers(accounting *services.Accouting,

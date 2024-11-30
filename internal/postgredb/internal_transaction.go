@@ -1,8 +1,9 @@
 package postgredb
 
 import (
-	"api-go/pkg/models"
 	"log"
+
+	"github.com/zkrdrd/api-go/pkg/models"
 )
 
 type filter struct {
