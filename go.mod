@@ -2,8 +2,6 @@ module github.com/zkrdrd/api-go
 
 go 1.22.2
 
-toolchain go1.23.1
-
 require (
 	github.com/lib/pq v1.10.9
 	github.com/zkrdrd/ConfigParser v0.0.0-20240514150824-35d708a75130
