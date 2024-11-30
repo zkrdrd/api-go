@@ -13,7 +13,6 @@ const (
 
 func handlersCashOut(method string, fn func(context.Context, *models.CashOut) error) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		if method != r.Method {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -89,9 +88,9 @@ func handlersInternalTransfer(method string, fn func(context.Context, *models.In
 	}
 }
 
-func handlersGerTransaction(method string, fn func(id string) (*models.Transactions, error)) func(w http.ResponseWriter, r *http.Request) {
+// handlersTransactions - метод для чтения транзакций.
+func handlersTransactions(method string, fn func(id string) (*models.Transactions, error)) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		if method != r.Method {
 			w.WriteHeader(http.StatusNotFound)
 			return

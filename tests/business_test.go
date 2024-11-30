@@ -16,13 +16,22 @@ func TestBusines(t *testing.T) {
 	dbconf, _ := app.ParseDBConfig("D:\\Programming\\api-go\\ConConf.json")
 	db, _ := dbconf.NewDB()
 
-	db.RecreateTableCustomers()
-	db.RecreateTableAccountBalance()
-	db.RecreateTableInternalTransactions()
+	if err := db.RecreateTableCustomers(); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.RecreateTableAccountBalance(); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := db.RecreateTableInternalTransactions(); err != nil {
+		t.Error(err)
+		return
+	}
 
 	for _, user := range ValueCustomers {
 		if err := db.SaveUser(user.MsgCustomers); err != nil {
-			t.Error(fmt.Errorf(`error "SaveUser" %v`, err))
+			t.Error(fmt.Errorf(`"save user %s: %w`, user.MsgCustomers.FirstName, err))
 		}
 	}
 
@@ -41,10 +50,10 @@ func TestBusines(t *testing.T) {
 		accountBalance, _ := db.GetAccountBalance(balance.MsgValueCashIn.Account)
 
 		if balance.MsgValueCashIn.Account != accountBalance.Account {
-			t.Error(fmt.Errorf(`result field %v != %v`, balance.MsgValueCashIn.Account, accountBalance.Account))
+			t.Error(fmt.Errorf(`result field %s != %s`, balance.MsgValueCashIn.Account, accountBalance.Account))
 		}
 		if balance.MsgValueCashIn.Amount != accountBalance.Amount {
-			t.Error(fmt.Errorf(`result field %v != %v`, balance.MsgValueCashIn.Amount, accountBalance.Amount))
+			t.Error(fmt.Errorf(`result field %s != %s`, balance.MsgValueCashIn.Amount, accountBalance.Amount))
 		}
 	}
 
@@ -54,7 +63,7 @@ func TestBusines(t *testing.T) {
 
 	count, err := db.CountInternalTransactions()
 	if err != nil {
-		t.Error(fmt.Errorf(`error "CountInternalTransactions" %v`, err))
+		t.Error(fmt.Errorf(`error "CountInternalTransactions" %w`, err))
 	}
 
 	if countResult != count {
@@ -65,7 +74,7 @@ func TestBusines(t *testing.T) {
 
 	resData, err := db.ListInternalTransaction(filterInternalTransactions)
 	if err != nil {
-		t.Error(fmt.Errorf(`error "ListInternalTransaction" %v`, err))
+		t.Error(fmt.Errorf(`error "ListInternalTransaction" %w`, err))
 	}
 
 	for index, value := range resData {

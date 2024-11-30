@@ -40,7 +40,7 @@ func dateTime() string {
 
 // Тут я пополняю счет наличными
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
-	if cacheOut.Account == `` {
+	if cacheOut.Account == `` || cacheOut.Account == `0` {
 		return ErrAccoutingIsEmpty
 	}
 

@@ -1,23 +1,23 @@
 package models
 
 import (
-	"fmt"
+	"errors"
 	"math/big"
 )
 
-// я тип - я описываю пополнение наличными
+// CashIn - описываю пополнение наличными.
 type CashIn struct {
 	Account string
 	Amount  string
 }
 
-// я тип - я описываю снятие наличными
+// я тип - я описываю снятие наличными.
 type CashOut struct {
 	Account string
 	Amount  string
 }
 
-// 6 символов точности
+// 6 символов точности.
 type Balance struct {
 	Account   string
 	Amount    string
@@ -33,7 +33,7 @@ func (b *Balance) GetBalance() *big.Int {
 
 func (b *Balance) SetBalance(amount *big.Int) error {
 	if amount == nil {
-		return fmt.Errorf(`amount is nil`)
+		return errors.New(`amount is nil`)
 	}
 	b.Amount = amount.String()
 	return nil

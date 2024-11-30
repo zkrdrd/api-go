@@ -6,7 +6,7 @@ import (
 )
 
 type filter struct {
-	order_by_collumn  string
+	OrderByColumn     string
 	order_by_asc_desc string
 	order_by_limit    int
 	order_by_offset   int
@@ -33,7 +33,7 @@ func FilterInternalTransaction(column, ask_desc string, limit, offset int) *filt
 		offset = 0
 	}
 	return &filter{
-		order_by_collumn:  column,
+		OrderByColumn:     column,
 		order_by_asc_desc: ask_desc,
 		order_by_limit:    limit,
 		order_by_offset:   offset,
@@ -72,7 +72,7 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, err
 	rows, err := db.useConn().Query(`
 	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
-		filt.order_by_collumn,
+		filt.OrderByColumn,
 		filt.order_by_asc_desc,
 		filt.order_by_limit,
 		filt.order_by_offset,
