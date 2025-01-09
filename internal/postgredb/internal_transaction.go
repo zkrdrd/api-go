@@ -78,6 +78,9 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, err
 		filt.orderByLimit,
 		filt.orderByOffset,
 	)
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
 	if err != nil {
 		return nil, err
 	}

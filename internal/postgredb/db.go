@@ -32,23 +32,31 @@ type Connecter interface {
 	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 }
 
-type Storage interface {
-	AsTx(ctx context.Context, fn func(Storage) error) error
+type storageData interface {
 	CountInternalTransactions() (int, error)
-	CreateDB() error
-	DeleteDatabase() error
 	GetAccountBalance(id string) (*models.Balance, error)
 	GetInternalTrasaction(id string) (*models.Transactions, error)
 	GetUser(id string) (*models.Users, error)
 	ListInternalTransaction(filt *filter) ([]*models.Transactions, error)
-	RecreateTableAccountBalance() error
-	RecreateTableCustomers() error
-	RecreateTableInternalTransactions() error
-	Rollback() error
 	SaveAccountBalance(balance *models.Balance) error
 	SaveInternalTransaction(transf *models.Transactions) error
 	SaveUser(user *models.Users) error
 	UpdateAccountBalance(balance *models.Balance) error
+}
+
+type storageManagment interface {
+	AsTx(ctx context.Context, fn func(Storage) error) error
+	CreateDB() error
+	DeleteDatabase() error
+	RecreateTableAccountBalance() error
+	RecreateTableCustomers() error
+	RecreateTableInternalTransactions() error
+	Rollback() error
+}
+
+type Storage interface {
+	storageData
+	storageManagment
 }
 
 type DB struct {
