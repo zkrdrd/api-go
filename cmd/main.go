@@ -9,12 +9,12 @@ func main() {
 
 	dbconf, _ := app.ParseDBConfig("ConConf.json")
 	db, _ := dbconf.NewDB()
-	//db.SaveUser(usr)
+	// db.SaveUser(usr)
 
 	// res, _ := db.GetUser("1")
 	// fmt.Println(*res)
 
-	//db.SaveInternalTransaction(transf)
+	// db.SaveInternalTransaction(transf)
 
 	// res, _ := db.GetTransfer("1")
 	// fmt.Println(*res)
@@ -35,35 +35,34 @@ func main() {
 // 	Amount:           "500",
 // }
 
-/*
-var cust = &handlers.Customer{
-	Customer_ID: "",
-	User_Name:   "Tertyfun",
-	Password:    "wertghjm,",
-}
+// var cust = &handlers.Customer{
+// 	Customer_ID: "",
+// 	User_Name:   "Tertyfun",
+// 	Password:    "wertghjm,",
+// }
 
-var ref = &refill.Refill{
-	Refill_ID:   "",
-	Customer_ID: "14363456234",
-	ATM:         "5112536",
-	Amount:      150,
-}
+// var ref = &refill.Refill{
+// 	Refill_ID:   "",
+// 	Customer_ID: "14363456234",
+// 	ATM:         "5112536",
+// 	Amount:      150,
+// }
 
-var rem = &remittance.Remittance{
-	Remittance_ID: "",
-	Customer_From: "3456789045656",
-	Customer_To:   "345678903421234",
-	Amount:        200,
-}
+// var rem = &remittance.Remittance{
+// 	Remittance_ID: "",
+// 	Customer_From: "3456789045656",
+// 	Customer_To:   "345678903421234",
+// 	Amount:        200,
+// }
 
-/*var cust = []struct {
-	Msg *customers.Customer
-}{
-	{
-		Msg: &customers.Customer{
-			Customer_ID: "",
-			User_Name:   "Tertyfun",
-			Password:    "wertghjm,",
-		},
-	},
-}*/
+// var cust = []struct {
+// 	Msg *customers.Customer
+// }{
+// 	{
+// 		Msg: &customers.Customer{
+// 			Customer_ID: "",
+// 			User_Name:   "Tertyfun",
+// 			Password:    "wertghjm,",
+// 		},
+// 	},
+// }

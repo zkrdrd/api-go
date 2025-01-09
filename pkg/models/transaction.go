@@ -7,22 +7,22 @@ import (
 
 // CashIn - описываю пополнение наличными.
 type CashIn struct {
-	Account string
-	Amount  string
+	Account string `json:"account"`
+	Amount  string `json:"amount"`
 }
 
-// я тип - я описываю снятие наличными.
+// CashOut - описываю снятие наличными.
 type CashOut struct {
-	Account string
-	Amount  string
+	Account string `json:"account"`
+	Amount  string `json:"amount"`
 }
 
 // 6 символов точности.
 type Balance struct {
-	Account   string
-	Amount    string
-	CreatedAt string
-	UpdatedAt string
+	Account   string `json:"account"`
+	Amount    string `json:"amount"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updateAt"`
 }
 
 func (b *Balance) GetBalance() *big.Int {
@@ -39,19 +39,19 @@ func (b *Balance) SetBalance(amount *big.Int) error {
 	return nil
 }
 
-// Я тип - я описываю перевод с одного счета на другой
+// Я тип - я описываю перевод с одного счета на другой.
 type InternalTranser struct {
-	AccountSender    string
-	AccountRecipient string
-	Amount           string
-	CreatedAt        string
+	AccountSender    string `json:"accountSender"`
+	AccountRecipient string `json:"accountRecipient"`
+	Amount           string `json:"amount"`
+	CreatedAt        string `json:"createdAt"`
 }
 
-// Я тип - я описываю перевод с одного счета на другой
+// Я тип - я описываю перевод с одного счета на другой.
 type Transactions struct {
-	AccountSender    string
-	AccountRecipient string
-	Amount           string
-	CreatedAt        string
-	TransactionType  string
+	AccountSender    string `json:"accountSender"`
+	AccountRecipient string `json:"accountRecipient"`
+	Amount           string `json:"amount"`
+	CreatedAt        string `json:"createdAt"`
+	TransactionType  string `json:"transactionType"`
 }

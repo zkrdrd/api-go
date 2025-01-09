@@ -124,15 +124,15 @@ func handlersGetBalance(method string, fn func(id string) (*models.Balance, erro
 			return
 		}
 
-		balanceId := &models.Balance{}
+		balanceID := &models.Balance{}
 
-		if err := json.NewDecoder(r.Body).Decode(balanceId); err != nil {
+		if err := json.NewDecoder(r.Body).Decode(balanceID); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = w.Write([]byte(MsgInvalidBody))
 			return
 		}
 
-		_, err := fn(balanceId.Account)
+		_, err := fn(balanceID.Account)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, _ = w.Write([]byte(err.Error()))

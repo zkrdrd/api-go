@@ -12,13 +12,13 @@ import (
 	"github.com/zkrdrd/api-go/pkg/models"
 )
 
-// Я знаю как делать операции с счетами пользователя
+// Я знаю как делать операции с счетами пользователя.
 type Accouting struct {
 	db *postgredb.DB
-	// Во мне лежит все  необходимое для работы
-	// к примеру подключение к БД, а возможно и подключения
-	// к другим сервисам
-	//db *db.Conn
+	// Во мне лежит все  необходимое для работы.
+	// к примеру подключение к БД, а возможно и подключения.
+	// к другим сервисам.
+	// db *db.Conn.
 	lock *locker.Locker
 }
 
@@ -34,12 +34,12 @@ func NewAccouting(dbConn *postgredb.DB, lock *locker.Locker) *Accouting {
 	}
 }
 
-// return time as string format RFC3339 "2006-01-02T15:04:05Z07:00"
+// return time as string format RFC3339 "2006-01-02T15:04:05Z07:00".
 func dateTime() string {
 	return time.Now().Format(time.RFC3339)
 }
 
-// Тут я пополняю счет наличными
+// Тут я пополняю счет наличными.
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
 	if cacheOut.Account == `` || cacheOut.Account == `0` {
 		return ErrAccoutingIsEmpty
@@ -71,7 +71,7 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 		return ErrMoneyNotEnough
 	}
 
-	// accountSender.Amount
+	// accountSender.Amount.
 	_ = accountSender.SetBalance(senderBalance.Sub(senderBalance, amount))
 	accountSender.UpdatedAt = dateTime()
 
@@ -98,7 +98,7 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	return fmt.Errorf(`cashout: %w`, err)
 }
 
-// Тут я снимаю со счета начличные
+// Тут я снимаю со счета начличные.
 func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	if cacheIn.Account == `` {
 		return ErrAccoutingIsEmpty
@@ -126,7 +126,7 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	amount := cashInToBalance.GetBalance()
 	recipientBalance := accountRecipient.GetBalance()
 
-	// accountSender.Amount
+	// accountSender.Amount.
 	_ = accountRecipient.SetBalance(recipientBalance.Add(recipientBalance, amount))
 	accountRecipient.UpdatedAt = dateTime()
 
@@ -154,7 +154,7 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	return fmt.Errorf(`cashin: %w`, err)
 }
 
-// Тут я перевожу деньги между внетренними счетами
+// Тут я перевожу деньги между внетренними счетами.
 func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.InternalTranser) error {
 	if transfer.AccountRecipient == `` || transfer.AccountSender == `` {
 		return ErrAccoutingIsEmpty
@@ -205,7 +205,7 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 		return ErrMoneyNotEnough
 	}
 
-	// accountSender.Amount
+	// accountSender.Amount.
 	_ = accountSender.SetBalance(senderBalance.Sub(senderBalance, amount))
 	accountSender.UpdatedAt = dateTime()
 

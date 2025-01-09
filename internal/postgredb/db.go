@@ -91,7 +91,7 @@ const (
 	dropDB                        = `DROP DATABASE api;`
 )
 
-// Инициализация соединения с БД
+// Инициализация соединения с БД.
 func (dbconf *DBConfig) NewDB() (*DB, error) {
 	db, err := sql.Open("postgres",
 		fmt.Sprintf(`host=%v 
@@ -114,7 +114,7 @@ func (dbconf *DBConfig) NewDB() (*DB, error) {
 	return &DB{conn: db, isTx: false}, nil
 }
 
-// Новая транзакция
+// Новая транзакция.
 func (db *DB) NewDBTx(conn *sql.Tx) *DB {
 	if db.isTx {
 		return db
@@ -190,7 +190,7 @@ func (db *DB) CreateDB() error {
 	return nil
 }
 
-// Пересоздание табилцы iternal_transaction
+// Пересоздание табилцы iternal_transaction.
 func (db *DB) RecreateTableInternalTransactions() error {
 	if _, err := db.conn.Exec(dropTableInternalTransactions); err != nil {
 		return err
@@ -201,7 +201,7 @@ func (db *DB) RecreateTableInternalTransactions() error {
 	return nil
 }
 
-// Пересоздание табилцы account_balacnce
+// Пересоздание табилцы account_balacnce.
 func (db *DB) RecreateTableAccountBalance() error {
 	if _, err := db.conn.Exec(dropTableAccountBalance); err != nil {
 		return err
@@ -212,7 +212,7 @@ func (db *DB) RecreateTableAccountBalance() error {
 	return nil
 }
 
-// Пересоздание табилцы customers
+// Пересоздание табилцы customers.
 func (db *DB) RecreateTableCustomers() error {
 	if _, err := db.conn.Exec(dropTableCustomers); err != nil {
 		return err
@@ -223,7 +223,7 @@ func (db *DB) RecreateTableCustomers() error {
 	return nil
 }
 
-// Удаление базы данных
+// Удаление базы данных.
 func (db *DB) DeleteDatabase() error {
 	if _, err := db.conn.Exec(dropDB); err != nil {
 		return err

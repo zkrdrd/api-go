@@ -4,7 +4,7 @@ import (
 	"github.com/zkrdrd/api-go/pkg/models"
 )
 
-// Получение пользователя из БД по id
+// Получение пользователя из БД по id.
 func (db *DB) GetAccountBalance(id string) (*models.Balance, error) {
 	balance := &models.Balance{}
 	if err := db.useConn().QueryRow(`
@@ -17,7 +17,7 @@ func (db *DB) GetAccountBalance(id string) (*models.Balance, error) {
 	return balance, nil
 }
 
-// Запись пользователя в БД
+// Запись пользователя в БД.
 func (db *DB) SaveAccountBalance(balance *models.Balance) error {
 	if _, err := db.useConn().Exec(`
 	INSERT INTO account_balance (account, amount, created_at) 
@@ -33,6 +33,7 @@ func (db *DB) SaveAccountBalance(balance *models.Balance) error {
 	return nil
 }
 
+// Обновление баланса.
 func (db *DB) UpdateAccountBalance(balance *models.Balance) error {
 	if _, err := db.useConn().Exec(`
 	UPDATE account_balance 
