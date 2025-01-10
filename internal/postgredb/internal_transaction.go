@@ -52,8 +52,8 @@ func (db *DB) CountInternalTransactions() (int, error) {
 }
 
 // Получение транзакции по id.
-func (db *DB) GetInternalTrasaction(id string) (*models.Transactions, error) {
-	transf := &models.Transactions{}
+func (db *DB) GetInternalTrasaction(id string) (*models.Transaction, error) {
+	transf := &models.Transaction{}
 	if err := db.useConn().QueryRow(`
 	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions WHERE id = $1;`, id).Scan(
@@ -68,8 +68,8 @@ func (db *DB) GetInternalTrasaction(id string) (*models.Transactions, error) {
 }
 
 // Получение всех транзакций из БД в slice.
-func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, error) {
-	transfSlice := []*models.Transactions{}
+func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transaction, error) {
+	transfSlice := []*models.Transaction{}
 	rows, err := db.useConn().Query(`
 	SELECT account_sender, account_recipient, amount, created_at, transaction_type
 	FROM internal_transactions ORDER BY $1, $2 LIMIT $3 OFFSET $4;`,
@@ -87,7 +87,7 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, err
 	defer rows.Close()
 
 	for rows.Next() {
-		transf := &models.Transactions{}
+		transf := &models.Transaction{}
 		if err := rows.Scan(&transf.AccountSender, &transf.AccountRecipient, &transf.Amount, &transf.CreatedAt, &transf.TransactionType); err != nil {
 			return nil, err
 		}
@@ -97,7 +97,7 @@ func (db *DB) ListInternalTransaction(filt *filter) ([]*models.Transactions, err
 }
 
 // Запись транзакций в БД.
-func (db *DB) SaveInternalTransaction(transf *models.Transactions) error {
+func (db *DB) SaveInternalTransaction(transf *models.Transaction) error {
 	if _, err := db.useConn().Exec(`
 	INSERT INTO internal_transactions (account_sender, account_recipient, amount, created_at, transaction_type) 
 	VALUES (

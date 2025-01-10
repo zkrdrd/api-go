@@ -276,10 +276,10 @@ var (
 	}
 
 	ExpectedValueTransactions = []struct {
-		MsgTransactions *models.Transactions
+		MsgTransactions *models.Transaction
 	}{
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "1",
 				AccountRecipient: "1",
 				Amount:           "10000000",
@@ -288,7 +288,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "2",
 				AccountRecipient: "2",
 				Amount:           "10000000",
@@ -297,7 +297,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "3",
 				AccountRecipient: "3",
 				Amount:           "10000000",
@@ -306,7 +306,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "4",
 				AccountRecipient: "4",
 				Amount:           "10000000",
@@ -315,7 +315,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "5",
 				AccountRecipient: "5",
 				Amount:           "10000000",
@@ -324,7 +324,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "1",
 				AccountRecipient: "2",
 				Amount:           "5000000",
@@ -333,7 +333,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "2",
 				AccountRecipient: "3",
 				Amount:           "5000000",
@@ -342,7 +342,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "3",
 				AccountRecipient: "4",
 				Amount:           "5000000",
@@ -351,7 +351,7 @@ var (
 			},
 		},
 		{
-			MsgTransactions: &models.Transactions{
+			MsgTransactions: &models.Transaction{
 				AccountSender:    "4",
 				AccountRecipient: "5",
 				Amount:           "5000000",

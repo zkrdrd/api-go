@@ -289,10 +289,10 @@ var (
 	}
 
 	TestTransactions = []struct {
-		MsgTransaction *models.Transactions
+		MsgTransaction *models.Transaction
 	}{
 		{
-			MsgTransaction: &models.Transactions{
+			MsgTransaction: &models.Transaction{
 				AccountSender:    `1`,
 				AccountRecipient: `2`,
 				Amount:           `500000`,
@@ -301,7 +301,7 @@ var (
 			},
 		},
 		{
-			MsgTransaction: &models.Transactions{
+			MsgTransaction: &models.Transaction{
 				AccountSender:    `2`,
 				AccountRecipient: `3`,
 				Amount:           `50000`,
@@ -310,7 +310,7 @@ var (
 			},
 		},
 		{
-			MsgTransaction: &models.Transactions{
+			MsgTransaction: &models.Transaction{
 				AccountSender:    `3`,
 				AccountRecipient: `4`,
 				Amount:           `5000`,
@@ -319,7 +319,7 @@ var (
 			},
 		},
 		{
-			MsgTransaction: &models.Transactions{
+			MsgTransaction: &models.Transaction{
 				AccountSender:    `4`,
 				AccountRecipient: `5`,
 				Amount:           `500`,
@@ -328,7 +328,7 @@ var (
 			},
 		},
 		{
-			MsgTransaction: &models.Transactions{
+			MsgTransaction: &models.Transaction{
 				AccountSender:    `5`,
 				AccountRecipient: `1`,
 				Amount:           `50`,

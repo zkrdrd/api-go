@@ -35,11 +35,11 @@ type Connecter interface {
 type storageData interface {
 	CountInternalTransactions() (int, error)
 	GetAccountBalance(id string) (*models.Balance, error)
-	GetInternalTrasaction(id string) (*models.Transactions, error)
+	GetInternalTrasaction(id string) (*models.Transaction, error)
 	GetUser(id string) (*models.Users, error)
-	ListInternalTransaction(filt *filter) ([]*models.Transactions, error)
+	ListInternalTransaction(filt *filter) ([]*models.Transaction, error)
 	SaveAccountBalance(balance *models.Balance) error
-	SaveInternalTransaction(transf *models.Transactions) error
+	SaveInternalTransaction(transf *models.Transaction) error
 	SaveUser(user *models.Users) error
 	UpdateAccountBalance(balance *models.Balance) error
 }

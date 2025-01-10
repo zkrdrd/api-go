@@ -39,6 +39,10 @@ func dateTime() string {
 	return time.Now().Format(time.RFC3339)
 }
 
+func (a *Accouting) GetTransaction(ctx context.Context, id string) (*models.Transaction, error) {
+	return nil, nil
+}
+
 // Тут я пополняю счет наличными.
 func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error {
 	if cacheOut.Account == `` || cacheOut.Account == `0` {
@@ -75,7 +79,7 @@ func (a *Accouting) CashOut(ctx context.Context, cacheOut *models.CashOut) error
 	_ = accountSender.SetBalance(senderBalance.Sub(senderBalance, amount))
 	accountSender.UpdatedAt = dateTime()
 
-	transaction := &models.Transactions{
+	transaction := &models.Transaction{
 		AccountSender:    accountSender.Account,
 		AccountRecipient: accountSender.Account,
 		Amount:           accountSender.Amount,
@@ -130,7 +134,7 @@ func (a *Accouting) CashIn(ctx context.Context, cacheIn *models.CashIn) error {
 	_ = accountRecipient.SetBalance(recipientBalance.Add(recipientBalance, amount))
 	accountRecipient.UpdatedAt = dateTime()
 
-	transaction := &models.Transactions{
+	transaction := &models.Transaction{
 		AccountSender:    accountRecipient.Account,
 		AccountRecipient: accountRecipient.Account,
 		Amount:           accountRecipient.Amount,
@@ -212,7 +216,7 @@ func (a *Accouting) InternalTransfer(ctx context.Context, transfer *models.Inter
 	_ = accountRecipient.SetBalance(recipientBalance.Add(recipientBalance, amount))
 	accountRecipient.UpdatedAt = dateTime()
 
-	transaction := &models.Transactions{
+	transaction := &models.Transaction{
 		AccountSender:    accountSender.Account,
 		AccountRecipient: accountRecipient.Account,
 		Amount:           transfer.Amount,

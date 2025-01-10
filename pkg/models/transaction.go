@@ -48,7 +48,8 @@ type InternalTranser struct {
 }
 
 // Я тип - я описываю перевод с одного счета на другой.
-type Transactions struct {
+type Transaction struct {
+	ID               string `json:"id"`
 	AccountSender    string `json:"accountSender"`
 	AccountRecipient string `json:"accountRecipient"`
 	Amount           string `json:"amount"`
